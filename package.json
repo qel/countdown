@@ -2,8 +2,11 @@
   "name": "countdown",
   "version": "0.1.0",
   "description": "React Countdown Timer",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
+    "build": "WEBPACK_ENV=build webpack",
+    "dev": "webpack-dev-server -d --hot --progress --colors --mode=dev",
+    "lint": "eslint ./src/**",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +18,21 @@
   "bugs": {
     "url": "https://github.com/qel/countdown/issues"
   },
-  "homepage": "https://github.com/qel/countdown#readme"
+  "homepage": "https://github.com/qel/countdown#readme",
+  "devDependencies": {
+    "babel-core": "^6.10.4",
+    "babel-eslint": "^6.1.2",
+    "babel-loader": "^6.2.4",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.11.1",
+    "babel-preset-stage-2": "^6.11.0",
+    "eslint": "^3.1.0",
+    "eslint-loader": "^1.4.1",
+    "webpack": "^1.13.1",
+    "webpack-dev-server": "^1.14.1"
+  },
+  "dependencies": {
+    "react": "^15.2.1",
+    "react-dom": "^15.2.1"
+  }
 }
