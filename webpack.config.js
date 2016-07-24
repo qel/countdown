@@ -24,6 +24,6 @@ module.exports = {
     },
     resolve: {
         root: path.resolve('./src'),
-        extensions: ['', '.js']
+        extensions: ['', '.js', '.jsx']
     }
 };
