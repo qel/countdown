@@ -54,17 +54,18 @@ let target = (() => {
     const min = queryObj.min || 0;
     const sec = queryObj.sec || 0;
 
-    return new Date(m + '/' + d + '/' + y + '/' + ' ' + h + ':' + min + ':' + sec);
+    return new Date(m + '/' + d + '/' + y + ' ' + h + ':' + min + ':' + sec);
 })()
 
 // get the local timezone
 //
 let localTZ;
 
-if (typeof Intl !== 'undefined') {
+if (Intl && Intl.DateTimeFormat() && Intl.DateTimeFormat().resolvedOptions() && Intl.DateTimeFormat().resolvedOptions().timeZone) {
+    console.log('local timezone data!');
     localTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
 } else {
-    for (x of tzList) {
+    for (const x of tzList) {
         if (now.toLocaleString('en-us', { hour: 'numeric', hour12: false })
             == now.toLocaleString('en-us', { timeZone: x.timeZone, hour: 'numeric', hour12: false }))
         {
@@ -80,6 +81,11 @@ const targetTZ = queryObj.tz || localTZ;
 const targetTZName = target.toLocaleTimeString('en-us', { timeZone: targetTZ, timeZoneName: 'long' }).split('M ')[1];
 const localTZName = target.toLocaleTimeString('en-us', { timeZone: localTZ, timeZoneName: 'long' }).split('M ')[1];
 
+console.log('target');
+console.dir(target);
+console.log('localTZ', localTZ);
+console.log('targetTZ', targetTZ);
+console.log('target timezone = ' + targetTZName);
 console.log('local timezone = ' + localTZ + ' = ' + localTZName);
 
 let offsetMessage = null;
@@ -90,6 +96,7 @@ const midnight = target.getHours() == 0;
 
 // translate to a different timezone
 if (queryObj.tz) {
+    console.log('translating queryObj.tz', queryObj.tz);
     const targetHour = target.toLocaleString('en-us', { hour: 'numeric', hour12: false });
     const targetMin = target.toLocaleString('en-us', { minute: 'numeric' });
     const targetDay = target.toLocaleString('en-us', { day: 'numeric' });
