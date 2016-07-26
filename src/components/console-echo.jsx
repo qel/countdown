@@ -75,13 +75,13 @@ export class ConsoleEcho extends Component {
             var prefix;
             var args = [];
             [prefix, ...args] = log;
-            for (const arg of args) {
+            args.forEach((arg) => {
                 if (typeof arg == 'object') {
                     msg = prefix + (JSON && JSON.stringify ? JSON.stringify(arg) : arg) + ' ';
                 } else {
                     msg = prefix + arg;
                 }
-            }
+            })
             return (
                 <li key={key}>{msg}</li>
             );

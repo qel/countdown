@@ -4,7 +4,7 @@
   "description": "React Countdown Timer",
   "main": "lib/index.js",
   "scripts": {
-    "build": "webpack -p",
+    "build": "webpack --config webpack.config.prod.js",
     "dev": "webpack-dev-server -d --hot --progress --colors --mode=dev",
     "lint": "eslint ./src/**",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -29,7 +29,8 @@
     "eslint": "^3.1.0",
     "eslint-loader": "^1.4.1",
     "json-loader": "^0.5.4",
-    "webpack": "^1.13.1"
+    "webpack": "^1.13.1",
+    "webpack-config": "^5.2.1"
   },
   "dependencies": {
     "moment-timezone": "^0.5.4",
