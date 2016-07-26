@@ -48,7 +48,7 @@ const now = new moment();
 // build target Date object
 //
 let target = (() => {
-    const m = queryObj.m || now.getMonth();
+    const m = queryObj.m || now.month();
     const d = queryObj.d || now.getDate();
     const y = queryObj.y || now.year();
     const h = queryObj.h || 0;
@@ -59,7 +59,7 @@ let target = (() => {
     //return new tc.DateTime(y, m, d, h, min, sec);
     return new moment({
         year: y,
-        month: m,
+        month: m - 1, // *** WHY????? ***
         day: d,
         hour: h,
         minute: min,
@@ -67,6 +67,8 @@ let target = (() => {
     });
 
 })()
+
+console.log('target month:', target.month());
 
 // get the local timezone
 //
@@ -87,6 +89,8 @@ if (Intl && Intl.DateTimeFormat() && Intl.DateTimeFormat().resolvedOptions() && 
     }
 }
 
+console.log('target month2:', target.month());
+
 const targetTZ = queryObj.tz || localTZ;
 
 // timeZoneName can be "short", "long"
@@ -102,6 +106,8 @@ console.log('local timezone = ' + localTZ + ' = ' + localTZName);
 
 let offsetMessage = null;
 
+console.log('target month3:', target.month());
+
 // see if we're targeting midnight before we localize the target time
 //
 const midnight = target.hour() == 0;
@@ -115,6 +121,8 @@ const dayofMonth = target.format('Do');
 const targetDateStr = weekdayName + ", " + monthName + " " + dayofMonth + ", " + target.year();
 
 const targetTimeStr = midnight ? "midnight" : target.format('h:mm:ss a');
+
+console.log('target month4:', target.format('MMMM'));
 
 export class Countdown extends Component {
     constructor(props) {
