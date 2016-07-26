@@ -4,7 +4,7 @@
   "description": "React Countdown Timer",
   "main": "lib/index.js",
   "scripts": {
-    "build": "WEBPACK_ENV=build webpack",
+    "build": "webpack -p",
     "dev": "webpack-dev-server -d --hot --progress --colors --mode=dev",
     "lint": "eslint ./src/**",
     "test": "echo \"Error: no test specified\" && exit 1"
