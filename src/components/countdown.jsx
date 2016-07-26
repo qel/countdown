@@ -74,19 +74,19 @@ console.log('target month:', target.month());
 //
 let localTZ;
 
-if (Intl && Intl.DateTimeFormat() && Intl.DateTimeFormat().resolvedOptions() && Intl.DateTimeFormat().resolvedOptions().timeZone) {
+if (window && window.Intl && Intl.DateTimeFormat() && Intl.DateTimeFormat().resolvedOptions() && Intl.DateTimeFormat().resolvedOptions().timeZone) {
     console.log('local timezone data!');
     localTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
 } else {
-    for (const x of tzList) {
-        console.log('now ' + now.format('H') + ' == ' + now.clone().tz(x.timeZone).format('H') + ' ' + x.timeZone);
-        if (now.format('H') === now.clone().tz(x.timeZone).format('H')) {
-            localTZ = x.timeZone;
-            console.log('x', x);
-            console.log('localTZ', localTZ);
-            break;
-        }
-    }
+    tzList.forEach((x) => {
+      console.log('now ' + now.format('H') + ' == ' + now.clone().tz(x.timeZone).format('H') + ' ' + x.timeZone);
+      if (now.format('H') === now.clone().tz(x.timeZone).format('H')) {
+          localTZ = x.timeZone;
+          console.log('x', x);
+          console.log('localTZ', localTZ);
+          return;
+      }
+    });
 }
 
 console.log('target month2:', target.month());
