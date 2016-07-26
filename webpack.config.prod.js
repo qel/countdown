@@ -1,5 +1,3 @@
-const webpack = require('webpack');
-const Config = require('webpack-config');
 const baseConfig = require('./webpack.config');
 
 module.exports = Object.assign(baseConfig, {
