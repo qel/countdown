@@ -28,10 +28,12 @@
     "babel-preset-stage-2": "^6.11.0",
     "eslint": "^3.1.0",
     "eslint-loader": "^1.4.1",
+    "json-loader": "^0.5.4",
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
+    "moment-timezone": "^0.5.4",
     "react": "^15.2.1",
     "react-dom": "^15.2.1"
   }

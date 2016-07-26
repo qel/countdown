@@ -19,11 +19,15 @@ module.exports = {
                 test: /(\.jsx|\.js)$/,
                 loader: "eslint-loader",
                 exclude: /node_modules/
+            },
+            {
+                test: /\.json$/,
+                loader: 'json-loader'
             }
         ]
     },
     resolve: {
         root: path.resolve('./src'),
-        extensions: ['', '.js', '.jsx']
+        extensions: ['', '.js', '.jsx', '.json']
     }
 };

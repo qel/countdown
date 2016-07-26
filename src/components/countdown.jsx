@@ -1,6 +1,5 @@
 import React, {Component, PropertyTypes} from 'react';
-
-console.log('hello!');
+import moment from 'moment-timezone';
 
 // actions
 
@@ -42,19 +41,31 @@ const queryObj = JSON.parse('{' + queryString.split('&')
     })
   .join(',') + '}');
 
-const now = new Date;
+ console.log('queryObj.tz', queryObj.tz);
+
+const now = new moment();
 
 // build target Date object
 //
 let target = (() => {
     const m = queryObj.m || now.getMonth();
     const d = queryObj.d || now.getDate();
-    const y = queryObj.y || now.getFullYear();
+    const y = queryObj.y || now.year();
     const h = queryObj.h || 0;
     const min = queryObj.min || 0;
     const sec = queryObj.sec || 0;
 
-    return new Date(m + '/' + d + '/' + y + ' ' + h + ':' + min + ':' + sec);
+    //return new Date(m + '/' + d + '/' + y + ' ' + h + ':' + min + ':' + sec);
+    //return new tc.DateTime(y, m, d, h, min, sec);
+    return new moment({
+        year: y,
+        month: m,
+        day: d,
+        hour: h,
+        minute: min,
+        second: sec
+    });
+
 })()
 
 // get the local timezone
@@ -66,10 +77,11 @@ if (Intl && Intl.DateTimeFormat() && Intl.DateTimeFormat().resolvedOptions() && 
     localTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
 } else {
     for (const x of tzList) {
-        if (now.toLocaleString('en-us', { hour: 'numeric', hour12: false })
-            == now.toLocaleString('en-us', { timeZone: x.timeZone, hour: 'numeric', hour12: false }))
-        {
+        console.log('now ' + now.format('H') + ' == ' + now.clone().tz(x.timeZone).format('H') + ' ' + x.timeZone);
+        if (now.format('H') === now.clone().tz(x.timeZone).format('H')) {
             localTZ = x.timeZone;
+            console.log('x', x);
+            console.log('localTZ', localTZ);
             break;
         }
     }
@@ -78,8 +90,8 @@ if (Intl && Intl.DateTimeFormat() && Intl.DateTimeFormat().resolvedOptions() && 
 const targetTZ = queryObj.tz || localTZ;
 
 // timeZoneName can be "short", "long"
-const targetTZName = target.toLocaleTimeString('en-us', { timeZone: targetTZ, timeZoneName: 'long' }).split('M ')[1];
-const localTZName = target.toLocaleTimeString('en-us', { timeZone: localTZ, timeZoneName: 'long' }).split('M ')[1];
+const targetTZName = target.tz(targetTZ).format('z');
+const localTZName = target.tz(localTZ).format('z');
 
 console.log('target');
 console.dir(target);
@@ -92,63 +104,17 @@ let offsetMessage = null;
 
 // see if we're targeting midnight before we localize the target time
 //
-const midnight = target.getHours() == 0;
+const midnight = target.hour() == 0;
 
-// translate to a different timezone
-if (queryObj.tz) {
-    console.log('translating queryObj.tz', queryObj.tz);
-    const targetHour = target.toLocaleString('en-us', { hour: 'numeric', hour12: false });
-    const targetMin = target.toLocaleString('en-us', { minute: 'numeric' });
-    const targetDay = target.toLocaleString('en-us', { day: 'numeric' });
-    const targetHourWithTZ = target.toLocaleString('en-us',
-        { timeZone: targetTZ, hour: 'numeric', hour12: false });
-    const targetMinWithTZ = target.toLocaleString('en-us',
-        { timeZone: targetTZ, minute: 'numeric' });
-    const targetDayWithTZ = target.toLocaleString('en-us',
-        { timeZone: targetTZ, day: 'numeric' });
-    let targetOffset = targetHour - targetHourWithTZ;
+const weekdayName = target.format('dddd');
 
-    // if minutes are different, adjust for partial hours
-    if (targetMin !== targetMinWithTZ) {
-        targetOffset += (targetMin - targetMinWithTZ) / 60;
-    }
+const monthName = target.format('MMMM');
 
-    if (targetOffset !== 0 || targetDay != targetDayWithTZ) {
-    if (targetDay != targetDayWithTZ) {
-        console.log('targetOffset: ' + targetOffset);
-        console.log('targetDay: ' + targetDay);
-        console.log('targetDayWithTZ: ' + targetDayWithTZ);
-        if ((targetDay > targetDayWithTZ && targetDayWithTZ != 1)
-            || (targetDay == 1 && targetDayWithTZ > 15))
-        {
-            targetOffset += 24;
-        } else {
-            targetOffset -= 24;
-        }
-        console.log('New targetOffset: ' + targetOffset);
-    }
+const dayofMonth = target.format('Do');
 
-    if (targetOffset < 0) {
-        offsetMessage = targetOffset * -1 + ' hour' + (targetOffset == -1 ? '' : 's')
-            + ' ahead of local time (' + localTZName + ').';
-        } else if (targetOffset > 0) {
-            offsetMessage = targetOffset + ' hour' + (targetOffset == 1 ? '' : 's')
-            + ' behind local time (' + localTZName + ').';
-        }
+const targetDateStr = weekdayName + ", " + monthName + " " + dayofMonth + ", " + target.year();
 
-        target.setTime(target.getTime() + (targetOffset*60*60*1000));
-    }
-}
-
-// weekday can be "narrow", "short", "long"
-const weekdayName = target.toLocaleString('en-us', { timeZone: targetTZ, weekday: 'long' });
-
-// month can be "numeric", "2-digit", "narrow", "short", "long"
-const monthName = target.toLocaleString('en-us', { timeZone: targetTZ, month: 'long' });
-
-const targetDateStr = weekdayName + ", " + monthName + " " + target.getDate() + ", " + target.getFullYear();
-
-const targetTimeStr = midnight ? "midnight" : target.toLocaleTimeString('en-us', { timeZone: targetTZ }).toLowerCase();
+const targetTimeStr = midnight ? "midnight" : target.format('h:mm:ss a');
 
 export class Countdown extends Component {
     constructor(props) {
@@ -186,7 +152,7 @@ export class Countdown extends Component {
         if (time == this.state.time) {
             return;
         }
-        let ticksLeft = target.getTime() / this.props.interval - time;
+        let ticksLeft = target.valueOf() / this.props.interval - time;
         const past = ticksLeft < 0;
         if (past) {
             ticksLeft = ticksLeft * -1;
