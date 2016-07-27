@@ -1,7 +1,7 @@
-import React, {Component, PropertyTypes} from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import Countdown from 'components/countdown';
-import ConsoleEcho from 'components/console-echo';
+import Countdown from './components/countdown';
+import ConsoleEcho from './components/console-echo';
 
 ReactDOM.render(
     <div>
@@ -9,5 +9,5 @@ ReactDOM.render(
         <br />
         <ConsoleEcho />
     </div>
-    ,document.getElementById('app')
+    , document.getElementById('app')
 );
