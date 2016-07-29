@@ -26,34 +26,69 @@ const encodeMap = [
     {prop: 'hour', offset: 0, range: 24},
     {prop: 'month', offset: 0, range: 12},
     {prop: 'date', offset: 1, range: 31},
-    {prop: 'timeZoneChar0', offset: 97, range: 26},
-    {prop: 'year', offset: 1900, range: 200},
-    {prop: 'minute', offset: 0, range: 60},
-    {prop: 'second', offset: 0, range: 60},
-    {prop: 'timeZoneChar1', offset: 97, range: 26},
-    {prop: 'timeZoneChar2', offset: 97, range: 26}
+    {prop: 'zone', char: 0, offset: 97, range: 27, nullable: true},
+    {prop: 'year', offset: 1900, range: 201, nullable: true},
+    {prop: 'minute', offset: 0, range: 61, nullable: true},
+    {prop: 'second', offset: 0, range: 61, nullable: true},
+    {prop: 'zone', char: 1, offset: 97, range: 27, nullable: true},
+    {prop: 'zone', char: 2, offset: 97, range: 27, nullable: true}
 ];
 
-// this is BUSTED
-
-const targetEncode = (moment, propCount) => {
+const targetEncode = (target, propCount) => {
+    if (! encodeMap[propCount].nullable) {
+        throw new Error('Cannot encode this propCount because the next prop is not nullable.');
+    }
+    const moment = new Moment(target);
     let out = 0;
+    moment.zone = target.zone.split('/')[1];
     for (let p = propCount - 1; p >= 0; p--) {
-        let val = moment[encodeMap[p].prop];
+        let val;
+        const charIndex = encodeMap[p].char;
         const offset = encodeMap[p].offset;
+        if (charIndex !== undefined) {
+            val = moment[encodeMap[p].prop][charIndex].charCodeAt(0);
+        } else {
+            val = moment[encodeMap[p].prop]();
+        }
+        if (encodeMap[p].nullable) {
+            val -= 1;
+        }
         if (offset) {
             val -= offset;
         }
-        if (p > 0) {
+        for (let exp = (p - 1); exp >= 0; exp--) {
             val *= encodeMap[p - 1].range;
         }
         out += val;
     }
+    console.log('targetEncode output', out);
     return base62.encode(out);
 };
 
 const targetDecode = (s) => {
-
+    let packed = base62.decode(s);
+    const moment = new Moment();
+    for (let p = 0; p < encodeMap.length; p++) {
+        const map = encodeMap[p];
+        let val = packed % map.range;
+        if (map.nullable) {
+            if (val === 0) {
+                return moment;
+            }
+            val--; // null is zero, so we have to subtract 1 to get the real value
+        }
+        if (map.char !== undefined) {
+            const c = String.fromCharCode(moment[map.prop][map.char]);
+            if (moment[map.prop]) {
+                moment[map.prop] += c;
+            } else {
+                moment[map.prop] = c;
+            }
+        } else {
+            moment[map.prop](val);
+        }
+    }
+    return moment;
 };
 
 // parse the query string
@@ -81,7 +116,7 @@ const target = (() => {
 
     // return new Date(m + '/' + d + '/' + y + ' ' + h + ':' + min + ':' + sec);
     // return new tc.DateTime(y, m, d, h, min, sec);
-    return new Moment({
+    const ret = new Moment({
         year: y,
         month: m - 1, // *** WHY????? ***
         date: d,
@@ -89,11 +124,18 @@ const target = (() => {
         minute: min,
         second: sec
     });
+    ret.zone = queryObj.tz;
+    return ret;
 })();
 
 console.log('target month:', target.month());
 
-console.log('target encoded:', targetEncode(target, 5));
+let enc = targetEncode(target, 5);
+console.log('target encoded:', enc);
+
+console.log('decodeing', enc);
+console.dir(targetDecode(enc));
+
 
 // get the local timezone
 //
