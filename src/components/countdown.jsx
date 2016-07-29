@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import Moment from 'moment-timezone';
+import base62 from 'base62';
 
 // main
 
@@ -21,6 +22,40 @@ if (queryString === '') {
     queryString = 'm=9&d=20&h=6&tz="America/New_York"';
 }
 
+const encodeMap = [
+    {prop: 'hour', offset: 0, range: 24},
+    {prop: 'month', offset: 0, range: 12},
+    {prop: 'date', offset: 1, range: 31},
+    {prop: 'timeZoneChar0', offset: 97, range: 26},
+    {prop: 'year', offset: 1900, range: 200},
+    {prop: 'minute', offset: 0, range: 60},
+    {prop: 'second', offset: 0, range: 60},
+    {prop: 'timeZoneChar1', offset: 97, range: 26},
+    {prop: 'timeZoneChar2', offset: 97, range: 26}
+];
+
+// this is BUSTED
+
+const targetEncode = (moment, propCount) => {
+    let out = 0;
+    for (let p = propCount - 1; p >= 0; p--) {
+        let val = moment[encodeMap[p].prop];
+        const offset = encodeMap[p].offset;
+        if (offset) {
+            val -= offset;
+        }
+        if (p > 0) {
+            val *= encodeMap[p - 1].range;
+        }
+        out += val;
+    }
+    return base62.encode(out);
+};
+
+const targetDecode = (s) => {
+
+};
+
 // parse the query string
 //
 const queryObj = JSON.parse('{' + queryString.split('&')
@@ -37,9 +72,9 @@ const now = new Moment();
 // build target Date object
 //
 const target = (() => {
+    const y = queryObj.y || now.year();
     const m = queryObj.m || now.month();
     const d = queryObj.d || now.getDate();
-    const y = queryObj.y || now.year();
     const h = queryObj.h || 0;
     const min = queryObj.min || 0;
     const sec = queryObj.sec || 0;
@@ -49,7 +84,7 @@ const target = (() => {
     return new Moment({
         year: y,
         month: m - 1, // *** WHY????? ***
-        day: d,
+        date: d,
         hour: h,
         minute: min,
         second: sec
@@ -57,6 +92,8 @@ const target = (() => {
 })();
 
 console.log('target month:', target.month());
+
+console.log('target encoded:', targetEncode(target, 5));
 
 // get the local timezone
 //

@@ -11,7 +11,9 @@
         "max-len": [2, 120, 4, {"ignoreTrailingComments": true, "ignoreUrls": true}],
         "prefer-template": 0,
         "new-cap": [2, {"capIsNewExceptions": ["DateTimeFormat"]}],
+        "no-unused-vars": [1],
         "object-curly-spacing": [1, "never"],
+        "prefer-const": [1],
         "react/jsx-indent": [1, 4],
         "react/jsx-indent-props": [1, 4]
     }
