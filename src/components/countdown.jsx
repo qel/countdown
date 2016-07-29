@@ -40,8 +40,17 @@ const targetEncode = (target, propCount) => {
     }
     const moment = new Moment(target);
     let out = 0;
-    moment.zone = target.zone.split('/')[1];
+    const zoneArr = target.zone.split('/')[1].toLowerCase().split('');
+    for (let i = 0; i < zoneArr.length; i++) {
+        const code = zoneArr[i].charCodeAt(0);
+        if (code < 96 || code > 123) {
+            zoneArr[i] = String.fromCharCode(123);
+        }
+    }
+    moment.zone = zoneArr.join('');
+    console.log('ceiling at }', moment.zone);
     for (let p = propCount - 1; p >= 0; p--) {
+        const map = encodeMap[p];
         let val;
         const charIndex = encodeMap[p].char;
         const offset = encodeMap[p].offset;
@@ -61,7 +70,7 @@ const targetEncode = (target, propCount) => {
         }
         out += val;
     }
-    console.log('targetEncode output', out);
+    console.log('targetEncode demimal output', out);
     return base62.encode(out);
 };
 
@@ -73,12 +82,17 @@ const targetDecode = (s) => {
         let val = packed % map.range;
         if (map.nullable) {
             if (val === 0) {
-                return moment;
+                return moment; // bail out when we hit a null nullable
             }
             val--; // null is zero, so we have to subtract 1 to get the real value
         }
+        if (map.offset) {
+            val += map.offset;
+        }
+        console.log('decoding prop', map.prop);
+        console.log('val', val);
         if (map.char !== undefined) {
-            const c = String.fromCharCode(moment[map.prop][map.char]);
+            const c = String.fromCharCode(val);
             if (moment[map.prop]) {
                 moment[map.prop] += c;
             } else {
@@ -87,6 +101,7 @@ const targetDecode = (s) => {
         } else {
             moment[map.prop](val);
         }
+        packed /= map.range;
     }
     return moment;
 };
@@ -130,10 +145,10 @@ const target = (() => {
 
 console.log('target month:', target.month());
 
-let enc = targetEncode(target, 5);
+let enc = targetEncode(target, 4);
 console.log('target encoded:', enc);
 
-console.log('decodeing', enc);
+console.log('decoding', enc);
 console.dir(targetDecode(enc));
 
 
