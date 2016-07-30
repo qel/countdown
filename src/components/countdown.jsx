@@ -51,7 +51,7 @@ if (queryPairs.length === 1 && queryPairs[0].indexOf('=') === -1) {
     if (queryObj.tz) {
         target = Moment.tz(momentProps, queryObj.tz);
     } else {
-        target = new Moment(momentProps);
+        target = Moment.tz(momentProps, betterGuess());
     }
 }
 
