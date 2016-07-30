@@ -1,9 +1,10 @@
 import React, {Component, PropTypes} from 'react';
 import Moment from 'moment-timezone';
-import {packMoment, unpackMoment, zoneList} from '../util/moment-pack';
+import {betterGuess, packMoment, unpackMoment, zoneList} from '../util/moment-pack';
 
-// main
-
+// --------------------------------------------------------------------------------
+// get the target time
+//
 let queryString = window.location.search.substr(1);
 
 if (queryString === '') {
@@ -12,88 +13,74 @@ if (queryString === '') {
 
 // parse the query string
 //
-const queryObj = JSON.parse('{' + queryString.split('&')
-    .map(x => {
-        const kvp = x.split('=');
-        return '"' + kvp[0] + '":' + kvp[1];
-    })
-    .join(',') + '}');
-
-console.log('queryObj.tz', queryObj.tz);
-
+const queryPairs = queryString.split('&');
 const now = new Moment();
 
-// build target Date object
-//
-const target = (() => {
-    const y = queryObj.y || now.year();
-    const m = queryObj.m || now.month();
-    const d = queryObj.d || now.getDate();
-    const h = queryObj.h || 0;
-    const min = queryObj.min || 0;
-    const sec = queryObj.sec || 0;
+let target;
+
+if (queryPairs.length === 1 && queryPairs[0].indexOf('=') === -1) {
+    // get a packed moment from packed queryString
+    //
+    target = unpackMoment(queryString);
+
+    console.log('unpacked querystring!');
+    console.dir(target);
+} else {
+    // get a moment from a normal queryString
+    //
+    const queryObj = JSON.parse('{' + queryString.split('&')
+        .map(x => {
+            const kvp = x.split('=');
+            return '"' + kvp[0] + '":' + kvp[1];
+        })
+        .join(',') + '}');
+
+    // build target Date object
+    //
+    const momentProps = {
+        year: queryObj.y || now.year(),
+        month: queryObj.m - 1 || now.month() - 1,
+        date: queryObj.d || now.date(),
+        hour: queryObj.h || 0,
+        minute: queryObj.min || 0,
+        second: queryObj.sec || 0
+    };
 
     // return new Date(m + '/' + d + '/' + y + ' ' + h + ':' + min + ':' + sec);
     // return new tc.DateTime(y, m, d, h, min, sec);
-    const ret = new Moment({
-        year: y,
-        month: m - 1, // *** WHY????? ***
-        date: d,
-        hour: h,
-        minute: min,
-        second: sec
-    });
-    ret.zone = queryObj.tz;
-    return ret;
-})();
-
-console.log('target month:', target.month());
-
-let enc = packMoment(target, 4);
-console.log('target encoded:', enc);
-
-console.log('decoding', enc);
-console.dir(unpackMoment(enc));
-
-
-// get the local timezone
-//
-let localTZ;
-
-if (window && window.Intl && window.Intl.DateTimeFormat() && window.Intl.DateTimeFormat().resolvedOptions()
-    && window.Intl.DateTimeFormat().resolvedOptions().timeZone) {
-    console.log('local timezone data!');
-    localTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
-} else {
-    zoneList.forEach((x) => {
-        console.log('now ' + now.format('H') + ' == ' + now.clone().tz(x.timeZone).format('H') + ' ' + x.timeZone);
-        if (now.format('H') === now.clone().tz(x.timeZone).format('H')) {
-            localTZ = x.timeZone;
-            console.log('x', x);
-            console.log('localTZ', localTZ);
-            return;
-        }
-    });
+    if (queryObj.tz) {
+        target = Moment.tz(momentProps, queryObj.tz);
+    } else {
+        target = new Moment(momentProps);
+    }
 }
 
-console.log('target month2:', target.month());
+console.log('target time packs to');
+console.log('1 prop (hr):', packMoment(target, 1));
+console.log('3 props (hr/mo/day):', packMoment(target, 3));
+console.log('4 props (hr/mo/day/timeZone):', packMoment(target, 4));
+console.log('5 props (hr/mo/day/year/timeZone):', packMoment(target, 5));
+console.log('6 props (hr/mo/day/year/min/timeZone):', packMoment(target, 6));
+console.log('7 props (hr/mo/day/year/min/sec/timeZone):', packMoment(target, 7));
+console.log('8 props (hr/mo/day/year/min/sec/timeZone(cont:1,city:1):', packMoment(target, 8));
+console.log('9 props (hr/mo/day/year/min/sec/timeZone(cont:1,city:2):', packMoment(target, 9));
+console.log('10 props (hr/mo/day/year/min/sec/timeZone(cont:1,city:3):', packMoment(target, 10));
+console.log('11 props (hr/mo/day/year/min/sec/timeZone(cont:2,city:3):', packMoment(target, 11));
 
-const targetTZ = queryObj.tz || localTZ;
+// --------------------------------------------------------------------------------
+// actual visual stuff now
+//
+const localTZ = betterGuess();
+const targetTZ = target.tz();
+
+console.log('local timeZone:', localTZ);
+console.log('target timeZone:', targetTZ);
 
 // timeZoneName can be "short", "long"
-const targetTZName = target.tz(targetTZ).format('z');
-const localTZName = target.tz(localTZ).format('z');
-
-console.log('target');
-console.dir(target);
-console.log('localTZ', localTZ);
-console.log('targetTZ', targetTZ);
-console.log('target timezone = ' + targetTZName);
-console.log('local timezone = ' + localTZ + ' = ' + localTZName);
+const targetTZName = target.format('z');
+const localTZName = now.format('z');
 
 let offsetMessage = null;
-
-console.log('target month3:', target.month());
 
 // see if we're targeting midnight before we localize the target time
 //
@@ -108,8 +95,6 @@ const dayofMonth = target.format('Do');
 const targetDateStr = weekdayName + ', ' + monthName + ' ' + dayofMonth + ', ' + target.year();
 
 const targetTimeStr = midnight ? 'midnight' : target.format('h:mm:ss a');
-
-console.log('target month4:', target.format('MMMM'));
 
 export class Countdown extends Component {
     static propTypes = {

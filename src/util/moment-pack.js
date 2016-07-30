@@ -21,7 +21,7 @@ export const zoneList = [
 
 const encodeMap = [
     {prop: 'hour', offset: 0, base: 24},
-    {prop: 'month', offset: 0, base: 12},
+    {prop: 'month', offset: 0, base: 13, nullable: true},
     {prop: 'date', offset: 1, base: 31},
     {prop: 'tzCity', char: 0, offset: 97, base: 28, nullable: true},
     {prop: 'year', offset: 1900, base: 201, nullable: true},
@@ -32,6 +32,27 @@ const encodeMap = [
     {prop: 'tzCity', char: 2, offset: 97, base: 28, nullable: true},
     {prop: 'tzCont', char: 1, offset: 97, base: 28, nullable: true}
 ];
+
+// utility function to get the local timeZone of the browser
+// (used when unpacking a moment with no timeZone data)
+export const betterGuess = () => {
+    // check Intl for the real timeZone
+    if (window && window.Intl && window.Intl.DateTimeFormat() && window.Intl.DateTimeFormat().resolvedOptions()
+        && window.Intl.DateTimeFormat().resolvedOptions().timeZone) {
+        return (Intl.DateTimeFormat().resolvedOptions().timeZone);
+    }
+
+    // iterate zoneList and see if something matches our current offset
+    const now = new Moment();
+    for (let x = 0; x < zoneList.length; x++) {
+        if (now.format('H') === now.clone().tz(x.timeZone).format('H')) {
+            return x.timeZone;
+        }
+    }
+
+    // default back to tz.guess()
+    return Moment.tz.guess();
+};
 
 // convert timeZone to lowercase and make all non-alpha characters Char 123
 export const base27str = (s) => {
@@ -46,12 +67,14 @@ export const base27str = (s) => {
 };
 
 export const packMoment = (target, propCount) => {
-    if (! encodeMap[propCount].nullable) {
+    if (propCount < encodeMap.length && encodeMap[propCount].nullable !== true) {
         throw new Error('Cannot encode this propCount because the next prop is not nullable.');
     }
 
     const moment = new Moment(target);
-    const zoneArr = target.zone.split('/');
+
+    // split the timeZone into Continent and City
+    const zoneArr = target.tz().split('/');
 
     moment.tzCont = base27str(zoneArr[0]);
     moment.tzCity = base27str(zoneArr[1]);
@@ -135,5 +158,9 @@ export const unpackMoment = (s) => {
         }
     }
 
-    return new Moment(momentProps);
+    if (momentProps.minute === undefined) {
+        momentProps.minute = 0;
+    }
+
+    return Moment.tz(momentProps, betterGuess());
 };

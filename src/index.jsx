@@ -6,8 +6,6 @@ import ConsoleEcho from './components/console-echo';
 ReactDOM.render(
     <div>
         <Countdown interval={40} places={2} />
-        <br />
-        <ConsoleEcho />
     </div>
     , document.getElementById('app')
 );
