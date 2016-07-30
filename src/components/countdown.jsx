@@ -1,110 +1,14 @@
 import React, {Component, PropTypes} from 'react';
 import Moment from 'moment-timezone';
-import base62 from 'base62';
+import {packMoment, unpackMoment, zoneList} from '../util/moment-pack';
 
 // main
 
 let queryString = window.location.search.substr(1);
 
-const tzList = [
-    {timeZone: 'America/New_York', name: 'Eastern'},
-    {timeZone: 'America/Chicago', name: 'Central'},
-    {timeZone: 'America/Denver', name: 'Mountain'},
-    {timeZone: 'America/Los_Angeles', name: 'Pacific'},
-    {timeZone: 'America/Phoenix', name: 'Arizona'},
-    {timeZone: 'Pacific/Honolulu', name: 'Hawaii'},
-    {timeZone: 'America/Anchorage', name: 'Alaska'},
-    {timeZone: 'Asia/Kathmandu', name: 'Nepal (GMT+5:45)'},
-    {timeZone: 'Asia/Kolkata', name: 'New Delhi (GMT+5:30)'}
-];
-
 if (queryString === '') {
     queryString = 'm=9&d=20&h=6&tz="America/New_York"';
 }
-
-const encodeMap = [
-    {prop: 'hour', offset: 0, range: 24},
-    {prop: 'month', offset: 0, range: 12},
-    {prop: 'date', offset: 1, range: 31},
-    {prop: 'zone', char: 0, offset: 97, range: 27, nullable: true},
-    {prop: 'year', offset: 1900, range: 201, nullable: true},
-    {prop: 'minute', offset: 0, range: 61, nullable: true},
-    {prop: 'second', offset: 0, range: 61, nullable: true},
-    {prop: 'zone', char: 1, offset: 97, range: 27, nullable: true},
-    {prop: 'zone', char: 2, offset: 97, range: 27, nullable: true}
-];
-
-const targetEncode = (target, propCount) => {
-    if (! encodeMap[propCount].nullable) {
-        throw new Error('Cannot encode this propCount because the next prop is not nullable.');
-    }
-    const moment = new Moment(target);
-    let out = 0;
-    const zoneArr = target.zone.split('/')[1].toLowerCase().split('');
-    for (let i = 0; i < zoneArr.length; i++) {
-        const code = zoneArr[i].charCodeAt(0);
-        if (code < 96 || code > 123) {
-            zoneArr[i] = String.fromCharCode(123);
-        }
-    }
-    moment.zone = zoneArr.join('');
-    console.log('ceiling at }', moment.zone);
-    for (let p = propCount - 1; p >= 0; p--) {
-        const map = encodeMap[p];
-        let val;
-        const charIndex = encodeMap[p].char;
-        const offset = encodeMap[p].offset;
-        if (charIndex !== undefined) {
-            val = moment[encodeMap[p].prop][charIndex].charCodeAt(0);
-        } else {
-            val = moment[encodeMap[p].prop]();
-        }
-        if (encodeMap[p].nullable) {
-            val -= 1;
-        }
-        if (offset) {
-            val -= offset;
-        }
-        for (let exp = (p - 1); exp >= 0; exp--) {
-            val *= encodeMap[p - 1].range;
-        }
-        out += val;
-    }
-    console.log('targetEncode demimal output', out);
-    return base62.encode(out);
-};
-
-const targetDecode = (s) => {
-    let packed = base62.decode(s);
-    const moment = new Moment();
-    for (let p = 0; p < encodeMap.length; p++) {
-        const map = encodeMap[p];
-        let val = packed % map.range;
-        if (map.nullable) {
-            if (val === 0) {
-                return moment; // bail out when we hit a null nullable
-            }
-            val--; // null is zero, so we have to subtract 1 to get the real value
-        }
-        if (map.offset) {
-            val += map.offset;
-        }
-        console.log('decoding prop', map.prop);
-        console.log('val', val);
-        if (map.char !== undefined) {
-            const c = String.fromCharCode(val);
-            if (moment[map.prop]) {
-                moment[map.prop] += c;
-            } else {
-                moment[map.prop] = c;
-            }
-        } else {
-            moment[map.prop](val);
-        }
-        packed /= map.range;
-    }
-    return moment;
-};
 
 // parse the query string
 //
@@ -145,11 +49,11 @@ const target = (() => {
 
 console.log('target month:', target.month());
 
-let enc = targetEncode(target, 4);
+let enc = packMoment(target, 4);
 console.log('target encoded:', enc);
 
 console.log('decoding', enc);
-console.dir(targetDecode(enc));
+console.dir(unpackMoment(enc));
 
 
 // get the local timezone
@@ -161,7 +65,7 @@ if (window && window.Intl && window.Intl.DateTimeFormat() && window.Intl.DateTim
     console.log('local timezone data!');
     localTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
 } else {
-    tzList.forEach((x) => {
+    zoneList.forEach((x) => {
         console.log('now ' + now.format('H') + ' == ' + now.clone().tz(x.timeZone).format('H') + ' ' + x.timeZone);
         if (now.format('H') === now.clone().tz(x.timeZone).format('H')) {
             localTZ = x.timeZone;
