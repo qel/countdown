@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Countdown from './components/countdown';
-import ConsoleEcho from './components/console-echo';
+// import ConsoleEcho from './components/console-echo';
 
 ReactDOM.render(
     <div>

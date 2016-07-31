@@ -45,7 +45,7 @@ export const betterGuess = () => {
     // iterate zoneList and see if something matches our current offset
     const now = new Moment();
     for (let x = 0; x < zoneList.length; x++) {
-        if (now.format('H') === now.clone().tz(x.timeZone).format('H')) {
+        if (now.format('H') === now.clone().tz(zoneList[x].timeZone).format('H')) {
             return x.timeZone;
         }
     }
