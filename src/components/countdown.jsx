@@ -165,7 +165,6 @@ export class Countdown extends Component {
         const endRad = 3.5 * Math.PI;
         const x = 240;
         const y = 240;
-        const defaultGCO = ctx.globalCompositeOperation;
 
         const drawDial = (r, pos, oldPos, divisor) => {
             if (pos === oldPos) {
@@ -176,7 +175,7 @@ export class Countdown extends Component {
                 ctx.beginPath();
                 ctx.arc(x, y, r, startRad, endRad);
                 ctx.lineWidth = 30;
-                ctx.globalCompositeOperation = defaultGCO;
+                ctx.globalCompositeOperation = 'source-over';
                 ctx.strokeStyle = '#333';
                 ctx.stroke();
             }
@@ -184,7 +183,7 @@ export class Countdown extends Component {
             ctx.arc(x, y, r, rad, endRad);
             ctx.lineWidth = 35;
             ctx.globalCompositeOperation = 'destination-out';
-            ctx.strokeStyle = 'rgba(0,0,0,1)';
+            ctx.strokeStyle = '#000';
             ctx.stroke();
         };
         drawDial(195, this.state.hr, this.state.prev.hr, 24);

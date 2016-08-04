@@ -13,6 +13,7 @@ ReactDOM.render(
                 position: 'absolute',
                 top: 0,
                 left: 0,
+                width: '480px',
                 zIndex: 0
             }}
         >
@@ -24,6 +25,7 @@ ReactDOM.render(
                 position: 'absolute',
                 top: `${480 - 213}px`,
                 left: 0,
+                width: '480px',
                 zIndex: 0
             }}
         >
