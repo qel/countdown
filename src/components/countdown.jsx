@@ -176,7 +176,7 @@ export class Countdown extends Component {
                 ctx.arc(x, y, r, startRad, endRad);
                 ctx.lineWidth = 30;
                 ctx.globalCompositeOperation = 'source-over';
-                ctx.strokeStyle = '#333';
+                ctx.strokeStyle = 'rgba(51,51,51,0.67)';
                 ctx.stroke();
             }
             ctx.beginPath();
