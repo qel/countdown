@@ -2,7 +2,7 @@
   "name": "countdown",
   "version": "0.1.0",
   "description": "React Countdown Timer",
-  "main": "lib/index.js",
+  "main": "lib/app.js",
   "scripts": {
     "build": "webpack --config webpack.config.prod.js",
     "dev": "webpack-dev-server -d --hot --progress --colors --mode=dev",

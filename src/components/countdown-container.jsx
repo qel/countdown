@@ -1,5 +1,6 @@
-import {connect} from 'react-redux';
 import React, {Component} from 'react';
+
+import {connect} from 'react-redux';
 
 import {Countdown} from './countdown';
 import {tick, animationStarted} from '../redux/actions';
@@ -19,14 +20,14 @@ class Container extends Component {
     startAnimation() {
         const {store} = this.context;
 
-        const recurseAnimation = () => {
+        const animation = () => {
             if (store.getState().animateStarted) {
                 store.dispatch(tick());
-                window.requestAnimationFrame(recurseAnimation);
+                window.requestAnimationFrame(animation);
             }
         };
 
-        store.dispatch(animationStarted());
+        store.dispatch(animationRunning());
     }
 
     render() {
