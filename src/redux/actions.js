@@ -1,15 +1,13 @@
-export const ANIMATION_RUNNING = 'ANIMATION_RUNNING';
-export const DRAW_FRAME = 'DRAW_FRAME';
-export const TICK = 'TICK';
+import * as types from './types';
 
 export const animationRunning = () => ({
-    type: ANIMATION_RUNNING
+    type: type.ANIMATION_RUNNING
 });
 
 export const drawFrame = () => ({
-    type: DRAW_FRAME
+    type: type.DRAW_FRAME
 });
 
 export const tick = () => ({
-    type: TICK
+    type: type.TICK
 });
