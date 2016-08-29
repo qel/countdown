@@ -1,6 +1,4 @@
-export const SET_TARGET_TIME = 'SET_TARGET_TIME';
-export const SET_TARGET_TIMEZONE = 'SET_TARGET_TIMEZONE';
-export const SET_LOCAL_TIMEZONE = 'SET_LOCAL_TIMEZONE';
+export const INIT = 'INIT';
 export const START_ANIMATION = 'START_ANIMATION';
 export const STOP_ANIMATION = 'STOP_ANIMATION';
 export const TICK = 'TICK';

@@ -4,7 +4,7 @@ const initialState = {
     targetTime: 0,
     targetTimezone: '',
     localTimezone: '',
-    animationRunning: false,
+    animationRunning: true,
     delta: {
         days: 0,
         hours: 0,
@@ -16,17 +16,11 @@ const initialState = {
 
 export const reducer = (state = initialState, action) => {
     switch (action.type) {
-        case types.SET_TARGET_TIME:
+        case types.INIT:
             return Object.assign({}, state, {
-                targetTime: action.targetTime
-            });
-        case types.SET_TARGET_TIMEZONE:
-            return Object.assign({}, state, {
+                localTimezone: action.localTimezone,
+                targetTime: action.targetTime,
                 targetTimezone: action.targetTimezone
-            });
-        case types.SET_LOCAL_TIMEZONE:
-            return Object.assign({}, state, {
-                localTimezone: action.localTimezone
             });
         case types.START_ANIMATION:
             return Object.assign({}, state, {

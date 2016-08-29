@@ -1,18 +1,10 @@
 import * as types from './types';
 
-export const setTargetTime = (targetTime) => ({
-    type: types.SET_TARGET_TIME,
-    targetTime
-});
-
-export const setTargetTimezone = (targetTimezone) => ({
-    type: types.SET_TARGET_TIMEZONE,
+export const init = ({localTimezone, targetTime, targetTimezone}) => ({
+    type: types.INIT,
+    localTimezone,
+    targetTime,
     targetTimezone
-});
-
-export const setLocalTimezone = (localTimezone) => ({
-    type: types.SET_LOCAL_TIMEZONE,
-    localTimezone
 });
 
 export const startAnimation = () => ({

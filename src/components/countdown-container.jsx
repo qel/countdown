@@ -1,42 +1,24 @@
-import React, {Component} from 'react';
 import {connect} from 'react-redux';
 
 import {Countdown} from './countdown';
-import {setTargetTime, setTargetTimezone, setLocalTimezone, startAnimation, stopAnimation, tick} from '../redux/actions';
+import {init, startAnimation, stopAnimation, tick} from '../redux/actions';
+import initializeCountdown from '../util/initializeCountdown';
 
-class CountdownContainer extends Component {
-    componentDidMount() {
-        const {store} = this.context;
-        this.unsubscribe = store.subscribe(() => {
-            this.forceUpdate();
-        });
-    }
-
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
-    startAnimation() {
-        const {store} = this.context;
-
-        const animation = () => {
-            if (store.getState().animateStarted) {
-                store.dispatch(tick());
-                window.requestAnimationFrame(animation);
-            }
-        };
-
-        store.dispatch(animationRunning());
-    }
-
-    render() {
+var CountdownContainer = (props) => {
+    if (!props.targetTime) {
         return (
-            <Countdown
-                {...state}
-                startAnimation={::this.startAnimation}
-            />
+            <div>
+                Loading...
+            </div>
         );
     }
+
+    return (
+        <Countdown
+            {...state}
+            startAnimation={::this.startAnimation}
+        />
+    );
 }
 
 const mapStateToProps = (state) => ({
@@ -51,27 +33,6 @@ const mapStateToProps = (state) => ({
     milliseconds: state.delta.milliseconds
 });
 
-// const mapDispatchToProps = (dispatch) => {
-//     return {
-//         setTargetTime: (targetTime) => {dispatch(setTargetTime(targetTime))},
-//         setTargetTimezone: (targetTimezone) => {dispatch(setTargetTimezone(targetTimezone))},
-//         setLocalTimezone: (localTimezone) => {dispatch(setLocalTimezone(localTimezone))},
-//         startAnimation: () => {dispatch(startAnimation())},
-//         stopAnimation: () => {dispatch(stopAnimation())},
-//         tick: () => {dispatch(tick)}
-//     };
-// };
+CountdownContainer = connect(mapStateToProps, null)(CountdownContainer);
 
-const mapDispatchToProps = {
-    setTargetTime,
-    setTargetTimezone,
-    setLocalTimezone,
-    startAnimation,
-    stopAnimation,
-    tick
-};
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(CountdownContainer);
+export default CountdownContainer;
