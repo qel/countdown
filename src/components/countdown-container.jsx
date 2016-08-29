@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
-
 import {connect} from 'react-redux';
 
 import {Countdown} from './countdown';
-import {tick, animationStarted} from '../redux/actions';
+import {setTargetTime, setTargetTimezone, setLocalTimezone, startAnimation, stopAnimation, tick} from '../redux/actions';
 
-class Container extends Component {
+class CountdownContainer extends Component {
     componentDidMount() {
         const {store} = this.context;
         this.unsubscribe = store.subscribe(() => {
@@ -40,8 +39,39 @@ class Container extends Component {
     }
 }
 
-Container.contextTypes = {
-    store: React.PropTypes.object
+const mapStateToProps = (state) => ({
+    targetTime: state.targetTime,
+    targetTimezone: state.targetTimezone,
+    localTimezone: state.localTimezone,
+    animationRunning: state.animationRunning,
+    days: state.delta.days,
+    hours: state.delta.hours,
+    minutes: state.delta.minutes,
+    seconds: state.delta.seconds,
+    milliseconds: state.delta.milliseconds
+});
+
+// const mapDispatchToProps = (dispatch) => {
+//     return {
+//         setTargetTime: (targetTime) => {dispatch(setTargetTime(targetTime))},
+//         setTargetTimezone: (targetTimezone) => {dispatch(setTargetTimezone(targetTimezone))},
+//         setLocalTimezone: (localTimezone) => {dispatch(setLocalTimezone(localTimezone))},
+//         startAnimation: () => {dispatch(startAnimation())},
+//         stopAnimation: () => {dispatch(stopAnimation())},
+//         tick: () => {dispatch(tick)}
+//     };
+// };
+
+const mapDispatchToProps = {
+    setTargetTime,
+    setTargetTimezone,
+    setLocalTimezone,
+    startAnimation,
+    stopAnimation,
+    tick
 };
 
-export default Container;
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(CountdownContainer);

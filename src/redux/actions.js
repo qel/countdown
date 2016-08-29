@@ -1,13 +1,28 @@
 import * as types from './types';
 
-export const animationRunning = () => ({
-    type: type.ANIMATION_RUNNING
+export const setTargetTime = (targetTime) => ({
+    type: types.SET_TARGET_TIME,
+    targetTime
 });
 
-export const drawFrame = () => ({
-    type: type.DRAW_FRAME
+export const setTargetTimezone = (targetTimezone) => ({
+    type: types.SET_TARGET_TIMEZONE,
+    targetTimezone
+});
+
+export const setLocalTimezone = (localTimezone) => ({
+    type: types.SET_LOCAL_TIMEZONE,
+    localTimezone
+});
+
+export const startAnimation = () => ({
+    type: types.START_ANIMATION
+});
+
+export const stopAnimation = () => ({
+    type: types.STOP_ANIMATION
 });
 
 export const tick = () => ({
-    type: type.TICK
+    type: types.TICK
 });

@@ -18,15 +18,15 @@ export const reducer = (state = initialState, action) => {
     switch (action.type) {
         case types.SET_TARGET_TIME:
             return Object.assign({}, state, {
-                targetTime: action.targetTime,
+                targetTime: action.targetTime
             });
         case types.SET_TARGET_TIMEZONE:
             return Object.assign({}, state, {
-                targetTimezone: action.targetTimezone,
+                targetTimezone: action.targetTimezone
             });
         case types.SET_LOCAL_TIMEZONE:
             return Object.assign({}, state, {
-                localTimezone: action.localTimezone,
+                localTimezone: action.localTimezone
             });
         case types.START_ANIMATION:
             return Object.assign({}, state, {
