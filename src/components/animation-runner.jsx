@@ -20,9 +20,21 @@ class AnimationRunner extends Component {
     }
 
     render() {
+        const children = React.Children.map(props.children, (child) => React.cloneElement(child, {canvas: {}});
         return (
             <div>
-                {props.children}
+                <canvas
+                    ref={(c) => React.Children.forEach(children, (child) => {child.props.canvas = c})}
+                    width={480}
+                    height={480}
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        zIndex: 100
+                    }}
+                />
+                {children}
             </div>
         )
     }
