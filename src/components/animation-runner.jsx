@@ -1,10 +1,11 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
-import {tick} from '../redux/actions';
+import {setCanvas, tick} from '../redux/actions';
 
 class AnimationRunner extends Component {
     constructor(props) {
+        super(props);
         this.animationLoop = ::this.animationLoop;
     }
 
@@ -14,17 +15,16 @@ class AnimationRunner extends Component {
 
     animationLoop() {
         if (this.props.animationRunning) {
-            store.dispatch(tick());
+            this.props.dispatch(tick());
         }
         window.requestAnimationFrame(this.animationLoop);
     }
 
     render() {
-        const children = React.Children.map(props.children, (child) => React.cloneElement(child, {canvas: {}});
         return (
             <div>
                 <canvas
-                    ref={(c) => React.Children.forEach(children, (child) => {child.props.canvas = c})}
+                    ref={(c) => {this.props.dispatch(setCanvas(c));}}
                     width={480}
                     height={480}
                     style={{
@@ -34,16 +34,20 @@ class AnimationRunner extends Component {
                         zIndex: 100
                     }}
                 />
-                {children}
+                {this.props.children}
             </div>
-        )
+        );
     }
 }
+
+AnimationRunner.propTypes = {
+    children: PropTypes.any,
+    dispatch: PropTypes.func.isRequired,
+    animationRunning: PropTypes.bool.isRequired
+};
 
 const mapStateToProps = (state) => ({
     animationRunning: state.animationRunning
 });
 
-AnimationRunner = connect(mapStateToProps, null)(AnimationRunner);
-
-export default AnimationRunner;
+export default connect(mapStateToProps, null)(AnimationRunner);

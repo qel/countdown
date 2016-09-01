@@ -6,9 +6,11 @@
     },
     "extends": "airbnb",
     "rules": {
+        "block-spacing": 0,
         "comma-dangle": [1, "never"],
         "indent": [2, 4, {"SwitchCase": 1}],
         "max-len": [2, 120, 4, {"ignoreTrailingComments": true, "ignoreUrls": true}],
+        "no-param-reassign": [0, {"props": false}],
         "prefer-template": [0],
         "new-cap": [2, {"capIsNewExceptions": ["DateTimeFormat"]}],
         "no-unused-vars": [1],

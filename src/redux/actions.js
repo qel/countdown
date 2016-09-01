@@ -1,10 +1,13 @@
 import * as types from './types';
 
-export const init = ({localTimezone, targetTime, targetTimezone}) => ({
-    type: types.INIT,
-    localTimezone,
-    targetTime,
-    targetTimezone
+export const setCanvas = (canvas) => ({
+    type: types.SET_CANVAS,
+    canvas
+});
+
+export const setTargetTime = (targetTime) => ({
+    type: types.SET_TARGET_TIME,
+    targetTime
 });
 
 export const startAnimation = () => ({

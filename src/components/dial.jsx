@@ -1,9 +1,15 @@
 import {PropTypes} from 'react';
+import {connect} from 'react-redux';
 
 const Dial = (props) => {
+    if (!props.canvas) {
+        return false;
+    }
+
     const ctx = props.canvas.getContext('2d');
     const r = props.radius;
     const pos = props.pos;
+    const oldPos = props.prevPos;
     const divisor = props.max;
 
     const startRad = 1.5 * Math.PI;
@@ -12,7 +18,7 @@ const Dial = (props) => {
     const y = 240;
 
     if (pos === oldPos) {
-        return;
+        return false;
     }
     const rad = (1.5 + pos / divisor * 2) * Math.PI;
     if (oldPos < pos) {
@@ -34,10 +40,15 @@ const Dial = (props) => {
 };
 
 Dial.propTypes = {
-    canvas: PropTypes.object.isRequired,
+    canvas: PropTypes.object,
     radius: PropTypes.number.isRequired,
     pos: PropTypes.number.isRequired,
+    prevPos: PropTypes.number.isRequired,
     max: PropTypes.number.isRequired
 };
 
-export default Dial;
+const mapStateToProps = (state) => ({
+    canvas: state.canvas
+});
+
+export default connect(mapStateToProps, null)(Dial);

@@ -1,19 +1,15 @@
+import React from 'react';
 import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
 import {createStore} from 'redux';
 
 import reducer from './redux/reducer';
-import initializeCountdown from './util/initializeCountdown';
 import AnimationRunner from './components/animation-runner';
-import Countdown from './components/countdown-container';
+import Countdown from './components/countdown';
 import NickCage from './components/nick-cage';
 
-const store = createStore(reducer);
-
-store.dispatch(init(initializeCountdown()));
-
 ReactDOM.render(
-    <Provider store={store}>
+    <Provider store={createStore(reducer)}>
         <AnimationRunner>
             <Countdown places={2} />
             <NickCage disabled />

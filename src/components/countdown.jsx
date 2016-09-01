@@ -1,69 +1,90 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
+import initializeCountdown from '../util/initialize-countdown';
 import Dial from './dial';
 
-var Countdown = (props) => {
-    if (!props.targetTime) {
+class Countdown extends Component {
+    constructor(props) {
+        super(props);
+        this.state = initializeCountdown();
+    }
+
+    render() {
+        const props = this.props;
+        const componentState = this.state;
+
+        console.log('--- Countdown componentState ---');
+        console.dir(componentState);
+
         return (
-            <div>
-                Loading...
+            <div
+                style={{
+                    width: 480,
+                    height: 160,
+                    top: 220,
+                    zIndex: 200,
+                    textAlign: 'center',
+                    fontFamily: 'Oldenburg',
+                    position: 'absolute',
+                    color: '#fff',
+                    mixBlendMode: 'difference'
+                }}
+            >
+                <div
+                    style={{
+                        fontFamily: 'Faster One',
+                        fontSize: '1.4em'
+                    }}
+                >
+                    {props.days + ' days ' + props.hours + ' hr. ' + props.minutes + ' min. '
+                        + (props.seconds + props.milliseconds / 1000).toFixed(props.places) + ' sec.'}
+                </div>
+                {props.past ? 'after' : 'until'}
+                <br />
+                {componentState.targetDateStr}
+                <br />
+                {componentState.targetTimeStr}
+                &nbsp;
+                {componentState.targetTZName}
+                <br />
+                {componentState.offsetMessage}
+                <Dial radius={195} pos={props.hours} prevPos={props.prev.hours} max={24} />
+                <Dial radius={160} pos={props.minutes} prevPos={props.prev.minutes} max={60} />
+                <Dial radius={125} pos={props.seconds} prevPos={props.prev.seconds} max={60} />
+                <Dial radius={90} pos={props.milliseconds} prevPos={props.prev.milliseconds} max={1000} />
             </div>
         );
     }
-
-    return (
-        <div
-            style={{
-                width: 480,
-                height: 160,
-                top: 220,
-                zIndex: 200,
-                textAlign: 'center',
-                fontFamily: 'Oldenburg',
-                position: 'absolute',
-                color: '#fff',
-                mixBlendMode: 'difference'
-            }}
-        >
-            <div
-                style={{
-                    fontFamily: 'Faster One',
-                    fontSize: '1.4em'
-                }}
-            >
-                {this.state.days + ' days ' + this.state.hr + ' hr. ' + this.state.min + ' min. '
-                    + (this.state.sec + this.state.ms / 1000).toFixed(this.props.places) + ' sec.'}
-            </div>
-            {this.state.past ? 'after' : 'until'}
-            <br />
-            {targetDateStr}
-            <br />
-            {targetTimeStr}
-            &nbsp;
-            {targetTZName}
-            <br />
-            {offsetMessage}
-            <Dial canvas={props.canvas} radius={195} pos={props.hours} max={24} />
-            <Dial canvas={props.canvas} radius={160} pos={props.minutes} max={60} />
-            <Dial canvas={props.canvas} radius={125} pos={props.seconds} max={60} />
-            <Dial canvas={props.canvas} radius={90} pos={props.milliseconds} max={1000} />
-        </div>
-    );
 }
 
+Countdown.propTypes = {
+    places: PropTypes.number.isRequired,
+    animationRunning: PropTypes.bool.isRequired,
+    days: PropTypes.number.isRequired,
+    hours: PropTypes.number.isRequired,
+    minutes: PropTypes.number.isRequired,
+    seconds: PropTypes.number.isRequired,
+    milliseconds: PropTypes.number.isRequired,
+    prev: PropTypes.object.isRequired,
+    past: PropTypes.bool.isRequired
+};
+
 const mapStateToProps = (state) => ({
-    targetTime: state.targetTime,
-    targetTimezone: state.targetTimezone,
-    localTimezone: state.localTimezone,
     animationRunning: state.animationRunning,
     days: state.delta.days,
     hours: state.delta.hours,
     minutes: state.delta.minutes,
     seconds: state.delta.seconds,
-    milliseconds: state.delta.milliseconds
+    milliseconds: state.delta.milliseconds,
+    prev: {
+        days: state.prevDelta.days,
+        hours: state.prevDelta.hours,
+        minutes: state.prevDelta.minutes,
+        seconds: state.prevDelta.seconds,
+        milliseconds: state.prevDelta.milliseconds
+    },
+    past: state.past
 });
 
-CountdownContainer = connect(mapStateToProps, null)(CountdownContainer);
-
-export default CountdownContainer;
+export default connect(mapStateToProps, null)(Countdown);

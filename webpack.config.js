@@ -2,9 +2,9 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-    entry: __dirname + '/src/index.jsx',
+    entry: __dirname + '/src/app.jsx',
     output: {
-        filename: 'index.js',
+        filename: 'app.js',
         path: __dirname + '/lib',
         publicPath: '/lib'
     },

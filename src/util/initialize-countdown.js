@@ -1,8 +1,7 @@
 import Moment from 'moment-timezone';
-import {betterGuess, packMoment, unpackMoment, zoneList} from './moment-pack';
+import {betterGuess, packMoment, unpackMoment} from './moment-pack';
 
 const initializeCountdown = () => {
-
     // --------------------------------------------------------------------------------
     // get the target time
     //
@@ -74,8 +73,8 @@ const initializeCountdown = () => {
     const localTimezone = betterGuess();
     const targetTimezone = target.tz();
 
-    console.log('local timeZone:', localTZ);
-    console.log('target timeZone:', targetTZ);
+    console.log('local timeZone:', localTimezone);
+    console.log('target timeZone:', targetTimezone);
 
     // timeZoneName can be "short", "long"
     const targetTZName = target.format('z');
@@ -100,7 +99,11 @@ const initializeCountdown = () => {
     return {
         localTimezone,
         targetTime: target.format('X'),
-        targetTimezone
+        targetTimezone,
+        targetDateStr,
+        targetTimeStr,
+        targetTZName,
+        offsetMessage
     };
 };
 
