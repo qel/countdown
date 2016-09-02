@@ -14,7 +14,7 @@ const Dial = (props) => {
     const oldPos = props.prevPos;
     const divisor = props.max;
 
-    if (pos === oldPos) {
+    if (pos === oldPos && !props.forceFullRender) {
         return false;
     }
 
@@ -24,7 +24,7 @@ const Dial = (props) => {
     const y = props.canvasHeight / 2;
     const rad = (1.5 + pos / divisor * 2) * Math.PI;
 
-    if (oldPos < pos) {
+    if (oldPos < pos || props.forceFullRender) {
         // if the dial has cycled (i.e., oldPos = 1 sec, new pos = 59 sec)
         if (oldPos > 0) {
             // if oldPos wasn't zero, we still have some of the old dial to clear
@@ -59,6 +59,7 @@ Dial.propTypes = {
     canvas: PropTypes.object,
     canvasWidth: PropTypes.number.isRequired,
     canvasHeight: PropTypes.number.isRequired,
+    forceFullRender: PropTypes.bool.isRequired,
     radius: PropTypes.number.isRequired,
     stroke: PropTypes.number.isRequired,
     pos: PropTypes.number.isRequired,
@@ -69,7 +70,8 @@ Dial.propTypes = {
 const mapStateToProps = (state) => ({
     canvas: state.canvas,
     canvasWidth: state.canvasWidth,
-    canvasHeight: state.canvasHeight
+    canvasHeight: state.canvasHeight,
+    forceFullRender: state.forceFullRender
 });
 
 export default connect(mapStateToProps, null)(Dial);

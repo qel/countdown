@@ -25,15 +25,15 @@ class Countdown extends Component {
                     zIndex: 200,
                     textAlign: 'center',
                     fontFamily: 'Oldenburg',
+                    fontSize: `${100 / 500 * props.canvasWidth}%`,
                     position: 'absolute',
-                    color: '#000',
-                    mixBlendMode: 'difference'
+                    color: '#000'
                 }}
             >
                 <div
                     style={{
                         fontFamily: 'Faster One',
-                        fontSize: '1.4em'
+                        fontSize: `${100 / 600 * (props.canvasWidth ** 0.8)}px`
                     }}
                 >
                     {props.days + ' days ' + props.hours + ' hr. ' + props.minutes + ' min. '

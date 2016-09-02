@@ -20,7 +20,8 @@ const initialState = {
         seconds: 0,
         milliseconds: 0
     },
-    past: false
+    past: false,
+    forceFullRender: false
 };
 
 export const reducer = (state = initialState, action) => {
@@ -32,7 +33,8 @@ export const reducer = (state = initialState, action) => {
         case types.SET_CANVAS_SIZE:
             return Object.assign({}, state, {
                 canvasWidth: action.canvasWidth,
-                canvasHeight: action.canvasHeight
+                canvasHeight: action.canvasHeight,
+                forceFullRender: true
             });
         case types.SET_TARGET_TIME:
             return Object.assign({}, state, {
@@ -49,7 +51,6 @@ export const reducer = (state = initialState, action) => {
         case types.TICK: {
             const now = Date.now();
             return Object.assign({}, state, {
-                past: state.targetTime - now < 0,
                 delta: {
                     days: (state.targetTime - now) / (1000 * 60 * 60 * 24) | 0,
                     hours: (state.targetTime - now) / (1000 * 60 * 60) % 24 | 0,
@@ -63,7 +64,9 @@ export const reducer = (state = initialState, action) => {
                     minutes: state.delta.minutes,
                     seconds: state.delta.seconds,
                     milliseconds: state.delta.milliseconds
-                }
+                },
+                past: state.targetTime - now < 0,
+                forceFullRender: false
             });
         }
         default:
