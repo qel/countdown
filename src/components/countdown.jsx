@@ -19,9 +19,9 @@ class Countdown extends Component {
         return (
             <div
                 style={{
-                    width: 480,
+                    width: props.canvasWidth,
                     height: 160,
-                    top: 220,
+                    top: props.canvasHeight / 2 - 42,
                     zIndex: 200,
                     textAlign: 'center',
                     fontFamily: 'Oldenburg',
@@ -48,10 +48,10 @@ class Countdown extends Component {
                 {componentState.targetTZName}
                 <br />
                 {componentState.offsetMessage}
-                <Dial radius={195} pos={props.hours} prevPos={props.prev.hours} max={24} />
-                <Dial radius={160} pos={props.minutes} prevPos={props.prev.minutes} max={60} />
-                <Dial radius={125} pos={props.seconds} prevPos={props.prev.seconds} max={60} />
-                <Dial radius={90} pos={props.milliseconds} prevPos={props.prev.milliseconds} max={1000} />
+                <Dial radius={44} stroke={6} pos={props.hours} prevPos={props.prev.hours} max={24} />
+                <Dial radius={36} stroke={6} pos={props.minutes} prevPos={props.prev.minutes} max={60} />
+                <Dial radius={28} stroke={6} pos={props.seconds} prevPos={props.prev.seconds} max={60} />
+                <Dial radius={20} stroke={6} pos={props.milliseconds} prevPos={props.prev.milliseconds} max={1000} />
             </div>
         );
     }
@@ -60,6 +60,8 @@ class Countdown extends Component {
 Countdown.propTypes = {
     dispatch: PropTypes.func.isRequired,
     places: PropTypes.number.isRequired,
+    canvasWidth: PropTypes.number.isRequired,
+    canvasHeight: PropTypes.number.isRequired,
     animationRunning: PropTypes.bool.isRequired,
     days: PropTypes.number.isRequired,
     hours: PropTypes.number.isRequired,
@@ -71,6 +73,8 @@ Countdown.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
+    canvasWidth: state.canvasWidth,
+    canvasHeight: state.canvasHeight,
     animationRunning: state.animationRunning,
     days: state.delta.days,
     hours: state.delta.hours,

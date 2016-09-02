@@ -2,6 +2,8 @@ import * as types from './types';
 
 const initialState = {
     canvas: null,
+    canvasWidth: 0,
+    canvasHeight: 0,
     targetTime: 0,
     animationRunning: true,
     delta: {
@@ -26,6 +28,11 @@ export const reducer = (state = initialState, action) => {
         case types.SET_CANVAS:
             return Object.assign({}, state, {
                 canvas: action.canvas
+            });
+        case types.SET_CANVAS_SIZE:
+            return Object.assign({}, state, {
+                canvasWidth: action.canvasWidth,
+                canvasHeight: action.canvasHeight
             });
         case types.SET_TARGET_TIME:
             return Object.assign({}, state, {

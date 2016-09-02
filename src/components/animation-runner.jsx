@@ -1,16 +1,23 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
-import {setCanvas, tick} from '../redux/actions';
+import {setCanvas, setCanvasSize, tick} from '../redux/actions';
 
 class AnimationRunner extends Component {
     constructor(props) {
         super(props);
+        this.resizeCanvas = ::this.resizeCanvas;
         this.animationLoop = ::this.animationLoop;
     }
 
     componentDidMount() {
+        window.addEventListener('resize', this.resizeCanvas, false);
+        this.resizeCanvas();
         this.animationLoop();
+    }
+
+    resizeCanvas() {
+        this.props.dispatch(setCanvasSize(window.innerWidth, window.innerHeight));
     }
 
     animationLoop() {
@@ -25,8 +32,8 @@ class AnimationRunner extends Component {
             <div>
                 <canvas
                     ref={(c) => {this.props.dispatch(setCanvas(c));}}
-                    width={480}
-                    height={480}
+                    width={this.props.canvasWidth}
+                    height={this.props.canvasHeight}
                     style={{
                         position: 'absolute',
                         top: 0,
@@ -43,10 +50,14 @@ class AnimationRunner extends Component {
 AnimationRunner.propTypes = {
     children: PropTypes.any,
     dispatch: PropTypes.func.isRequired,
+    canvasWidth: PropTypes.number.isRequired,
+    canvasHeight: PropTypes.number.isRequired,
     animationRunning: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = (state) => ({
+    canvasWidth: state.canvasWidth,
+    canvasHeight: state.canvasHeight,
     animationRunning: state.animationRunning
 });
 

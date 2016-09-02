@@ -5,6 +5,12 @@ export const setCanvas = (canvas) => ({
     canvas
 });
 
+export const setCanvasSize = (canvasWidth, canvasHeight) => ({
+    type: types.SET_CANVAS_SIZE,
+    canvasWidth,
+    canvasHeight
+});
+
 export const setTargetTime = (targetTime) => ({
     type: types.SET_TARGET_TIME,
     targetTime
