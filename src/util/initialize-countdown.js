@@ -98,7 +98,7 @@ const initializeCountdown = () => {
 
     return {
         localTimezone,
-        targetTime: target.format('X'),
+        targetTime: target.format('X') * 1000,
         targetTimezone,
         targetDateStr,
         targetTimeStr,

@@ -2,20 +2,19 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
 import initializeCountdown from '../util/initialize-countdown';
+import {setTargetTime} from '../redux/actions';
 import Dial from './dial';
 
 class Countdown extends Component {
     constructor(props) {
         super(props);
         this.state = initializeCountdown();
+        props.dispatch(setTargetTime(this.state.targetTime));
     }
 
     render() {
         const props = this.props;
         const componentState = this.state;
-
-        console.log('--- Countdown componentState ---');
-        console.dir(componentState);
 
         return (
             <div
@@ -27,7 +26,7 @@ class Countdown extends Component {
                     textAlign: 'center',
                     fontFamily: 'Oldenburg',
                     position: 'absolute',
-                    color: '#fff',
+                    color: '#000',
                     mixBlendMode: 'difference'
                 }}
             >
@@ -59,6 +58,7 @@ class Countdown extends Component {
 }
 
 Countdown.propTypes = {
+    dispatch: PropTypes.func.isRequired,
     places: PropTypes.number.isRequired,
     animationRunning: PropTypes.bool.isRequired,
     days: PropTypes.number.isRequired,

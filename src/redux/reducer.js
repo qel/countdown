@@ -24,8 +24,6 @@ const initialState = {
 export const reducer = (state = initialState, action) => {
     switch (action.type) {
         case types.SET_CANVAS:
-            console.log('--- setting canvas ---');
-            console.dir(action.canvas);
             return Object.assign({}, state, {
                 canvas: action.canvas
             });
@@ -44,7 +42,7 @@ export const reducer = (state = initialState, action) => {
         case types.TICK: {
             const now = Date.now();
             return Object.assign({}, state, {
-                past: state.targetTime - now > 0,
+                past: state.targetTime - now < 0,
                 delta: {
                     days: (state.targetTime - now) / (1000 * 60 * 60 * 24) | 0,
                     hours: (state.targetTime - now) / (1000 * 60 * 60) % 24 | 0,

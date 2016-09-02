@@ -12,16 +12,28 @@ const Dial = (props) => {
     const oldPos = props.prevPos;
     const divisor = props.max;
 
+    if (pos === oldPos) {
+        return false;
+    }
+
     const startRad = 1.5 * Math.PI;
     const endRad = 3.5 * Math.PI;
     const x = 240;
     const y = 240;
-
-    if (pos === oldPos) {
-        return false;
-    }
     const rad = (1.5 + pos / divisor * 2) * Math.PI;
+
     if (oldPos < pos) {
+        // if the dial has cycled (i.e., oldPos = 1 sec, new pos = 59 sec)
+        if (oldPos > 0) {
+            // if oldPos wasn't zero, we still have some of the old dial to clear
+            ctx.beginPath();
+            ctx.arc(x, y, r, startRad, rad);
+            ctx.lineWidth = 35;
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.strokeStyle = '#000';
+            ctx.stroke();
+        }
+        // redraw a fully-solid dial
         ctx.beginPath();
         ctx.arc(x, y, r, startRad, endRad);
         ctx.lineWidth = 30;
@@ -29,6 +41,8 @@ const Dial = (props) => {
         ctx.strokeStyle = 'rgba(51,51,51,0.67)';
         ctx.stroke();
     }
+    // clear the white part of the dial
+    // TODO: is it faster for us to calculate the oldRad here and only clear what we have to?
     ctx.beginPath();
     ctx.arc(x, y, r, rad, endRad);
     ctx.lineWidth = 35;
