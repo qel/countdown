@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import {polyfill} from 'raf';
 
 import {setCanvas, setCanvasSize, tick} from '../redux/actions';
 
@@ -11,6 +12,9 @@ class AnimationRunner extends Component {
     }
 
     componentDidMount() {
+        if (!window.requestAnimationFrame) {
+            polyfill();
+        }
         window.addEventListener('resize', this.resizeCanvas, false);
         this.resizeCanvas();
         this.animationLoop();

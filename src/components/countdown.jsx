@@ -25,15 +25,15 @@ class Countdown extends Component {
                     zIndex: 200,
                     textAlign: 'center',
                     fontFamily: 'Oldenburg',
+                    fontSize: `${100 / 500 * props.canvasWidth}%`,
                     position: 'absolute',
-                    color: '#000',
-                    mixBlendMode: 'difference'
+                    color: '#000'
                 }}
             >
                 <div
                     style={{
                         fontFamily: 'Faster One',
-                        fontSize: '1.4em'
+                        fontSize: `${100 / 600 * (props.canvasWidth ** 0.8)}px`
                     }}
                 >
                     {props.days + ' days ' + props.hours + ' hr. ' + props.minutes + ' min. '
@@ -50,7 +50,12 @@ class Countdown extends Component {
                 {componentState.offsetMessage}
                 <Dial radius={44} stroke={6} pos={props.hours} prevPos={props.prev.hours} max={24} />
                 <Dial radius={36} stroke={6} pos={props.minutes} prevPos={props.prev.minutes} max={60} />
-                <Dial radius={28} stroke={6} pos={props.seconds} prevPos={props.prev.seconds} max={60} />
+                <Dial
+                    radius={28}
+                    stroke={6}
+                    pos={props.seconds + props.milliseconds / 1000}
+                    prevPos={props.prev.seconds} max={60}
+                />
                 <Dial radius={20} stroke={6} pos={props.milliseconds} prevPos={props.prev.milliseconds} max={1000} />
             </div>
         );

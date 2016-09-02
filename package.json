@@ -40,6 +40,7 @@
   "dependencies": {
     "base62": "^1.1.1",
     "moment-timezone": "^0.5.4",
+    "raf": "^3.3.0",
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
     "react-redux": "^4.4.5"

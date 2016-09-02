@@ -23,8 +23,8 @@ export const NickCage = ({disabled}) => {
                 alt="right Cage"
                 style={{
                     position: 'absolute',
-                    top: `${480 - 213}px`,
-                    left: 0,
+                    top: `${window.innerHeight - 204}px`,
+                    left: `${window.innerWidth - 480}px`,
                     width: '480px',
                     zIndex: 0
                 }}
