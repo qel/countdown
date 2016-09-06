@@ -1,5 +1,5 @@
 import Moment from 'moment-timezone';
-import {betterGuess, packMoment, unpackMoment} from './moment-pack';
+import {betterGuess, unpackMoment} from './moment-pack';
 
 const initializeCountdown = () => {
     // --------------------------------------------------------------------------------
@@ -22,9 +22,6 @@ const initializeCountdown = () => {
         // get a packed moment from packed queryString
         //
         target = unpackMoment(queryString);
-
-        console.log('unpacked querystring!');
-        console.dir(target);
     } else {
         // get a moment from a normal queryString
         //
@@ -55,32 +52,17 @@ const initializeCountdown = () => {
         }
     }
 
-    console.log('target time packs to');
-    console.log('1 prop (hr):', packMoment(target, 1));
-    console.log('3 props (hr/mo/day):', packMoment(target, 3));
-    console.log('4 props (hr/mo/day/timeZone):', packMoment(target, 4));
-    console.log('5 props (hr/mo/day/year/timeZone):', packMoment(target, 5));
-    console.log('6 props (hr/mo/day/year/min/timeZone):', packMoment(target, 6));
-    console.log('7 props (hr/mo/day/year/min/sec/timeZone):', packMoment(target, 7));
-    console.log('8 props (hr/mo/day/year/min/sec/timeZone(cont:1,city:1):', packMoment(target, 8));
-    console.log('9 props (hr/mo/day/year/min/sec/timeZone(cont:1,city:2):', packMoment(target, 9));
-    console.log('10 props (hr/mo/day/year/min/sec/timeZone(cont:1,city:3):', packMoment(target, 10));
-    console.log('11 props (hr/mo/day/year/min/sec/timeZone(cont:2,city:3):', packMoment(target, 11));
-
     // --------------------------------------------------------------------------------
     // actual visual stuff now
     //
     const localTimezone = betterGuess();
     const targetTimezone = target.tz();
 
-    console.log('local timeZone:', localTimezone);
-    console.log('target timeZone:', targetTimezone);
-
     // timeZoneName can be "short", "long"
     const targetTZName = target.format('z');
-    const localTZName = now.format('z');
+    // const localTZName = now.format('z');
 
-    let offsetMessage = null;
+    const offsetMessage = 'GMT ' + target.format('Z');
 
     // see if we're targeting midnight before we localize the target time
     //

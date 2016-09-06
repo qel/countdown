@@ -15,6 +15,29 @@ class Countdown extends Component {
     render() {
         const props = this.props;
         const componentState = this.state;
+        const gl = props.canvasContext3d;
+
+        // // Countdown hits its render before the child Dials, so we can clear the canvas here.
+        // if (gl) {
+        //     // Set clear color to black, fully opaque
+        //     gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        //     // Enable depth testing
+        //     gl.enable(gl.DEPTH_TEST);
+        //     // Near things obscure far things
+        //     gl.depthFunc(gl.LEQUAL);
+        //     // Clear the color as well as the depth buffer.
+        //     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        // }
+
+        let offsetMessage = null;
+        if (componentState.offsetMessage) {
+            offsetMessage = (
+                <span style={{fontSize: `${65 / 500 * props.canvasWidth}%`}}>
+                    &nbsp;
+                    ({componentState.offsetMessage})
+                </span>
+            );
+        }
 
         return (
             <div
@@ -22,12 +45,12 @@ class Countdown extends Component {
                     width: props.canvasWidth,
                     height: 160,
                     top: props.canvasHeight / 2 - 42,
-                    zIndex: 200,
+                    zIndex: 300,
                     textAlign: 'center',
                     fontFamily: 'Oldenburg',
                     fontSize: `${100 / 500 * props.canvasWidth}%`,
                     position: 'absolute',
-                    color: '#000'
+                    color: '#ccf'
                 }}
             >
                 <div
@@ -46,8 +69,7 @@ class Countdown extends Component {
                 {componentState.targetTimeStr}
                 &nbsp;
                 {componentState.targetTZName}
-                <br />
-                {componentState.offsetMessage}
+                {offsetMessage}
                 <Dial radius={44} stroke={6} pos={props.hours} prevPos={props.prev.hours} max={24} />
                 <Dial radius={36} stroke={6} pos={props.minutes} prevPos={props.prev.minutes} max={60} />
                 <Dial
@@ -78,6 +100,8 @@ Countdown.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
+    canvasContext: state.canvasContext,
+    canvasContext3d: state.canvasContext3d,
     canvasWidth: state.canvasWidth,
     canvasHeight: state.canvasHeight,
     animationRunning: state.animationRunning,

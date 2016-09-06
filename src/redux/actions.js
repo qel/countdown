@@ -1,8 +1,13 @@
 import * as types from './types';
 
-export const setCanvas = (canvas) => ({
-    type: types.SET_CANVAS,
-    canvas
+export const setCanvasContext = (canvasContext) => ({
+    type: types.SET_CANVAS_CONTEXT,
+    canvasContext
+});
+
+export const setCanvasContext3d = (canvasContext3d) => ({
+    type: types.SET_CANVAS_CONTEXT_3D,
+    canvasContext3d
 });
 
 export const setCanvasSize = (canvasWidth, canvasHeight) => ({

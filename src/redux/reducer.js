@@ -1,7 +1,8 @@
 import * as types from './types';
 
 const initialState = {
-    canvas: null,
+    canvasContext: null,
+    canvasContext3d: null,
     canvasWidth: 0,
     canvasHeight: 0,
     targetTime: 0,
@@ -26,15 +27,23 @@ const initialState = {
 
 export const reducer = (state = initialState, action) => {
     switch (action.type) {
-        case types.SET_CANVAS:
+        case types.SET_CANVAS_CONTEXT:
             return Object.assign({}, state, {
-                canvas: action.canvas
+                canvasContext: action.canvasContext
+            });
+        case types.SET_CANVAS_CONTEXT_3D:
+            return Object.assign({}, state, {
+                canvasContext3d: action.canvasContext3d
             });
         case types.SET_CANVAS_SIZE:
             return Object.assign({}, state, {
                 canvasWidth: action.canvasWidth,
                 canvasHeight: action.canvasHeight,
                 forceFullRender: true
+            });
+        case types.SET_RENDERER:
+            return Object.assign({}, state, {
+                renderer: action.renderer
             });
         case types.SET_TARGET_TIME:
             return Object.assign({}, state, {
