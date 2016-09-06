@@ -58,14 +58,14 @@ export const reducer = (state = initialState, action) => {
                 animationRunning: false
             });
         case types.TICK: {
-            const now = Date.now();
+            const ms = (state.targetTime - Date.now()) | 0;
             return Object.assign({}, state, {
                 delta: {
-                    days: (state.targetTime - now) / (1000 * 60 * 60 * 24) | 0,
-                    hours: (state.targetTime - now) / (1000 * 60 * 60) % 24 | 0,
-                    minutes: (state.targetTime - now) / (1000 * 60) % 60 | 0,
-                    seconds: (state.targetTime - now) / 1000 % 60 | 0,
-                    milliseconds: (state.targetTime - now) % 1000 | 0
+                    days: ms / (1000 * 60 * 60 * 24) | 0,
+                    hours: ms / (1000 * 60 * 60) % 24 | 0,
+                    minutes: ms / (1000 * 60) % 60 | 0,
+                    seconds: ms / 1000 % 60 | 0,
+                    milliseconds: ms % 1000 | 0
                 },
                 prevDelta: {
                     days: state.delta.days,
@@ -74,7 +74,7 @@ export const reducer = (state = initialState, action) => {
                     seconds: state.delta.seconds,
                     milliseconds: state.delta.milliseconds
                 },
-                past: state.targetTime - now < 0,
+                past: ms < 0,
                 forceFullRender: false
             });
         }

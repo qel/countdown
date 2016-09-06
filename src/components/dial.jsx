@@ -111,22 +111,32 @@ class Dial extends Component {
             return dial2d(props);
         }
 
-        if (props.radius < 44) {
-            console.log('bail');
-            return false;
-        }
-
         if (this.state.positionBuffer === null) {
             console.log('!!! empty positionBuffer !!!');
         }
 
+        // if (props.radius > 20) {
+        //     return false;
+        // }
+
         gl.bindBuffer(gl.ARRAY_BUFFER, this.state.positionBuffer);
 
+        const sin = Math.sin;
+        const cos = Math.cos;
+        const pi = Math.PI;
+
+        // theta: position in radians
+        const theta = (props.pos / props.max) * pi * 2;
+        const thetaNormal90 = theta + pi / 2;
+        const thetaNormal270 = theta + pi + pi / 2;
+
         // three 2d points
+        const r = props.radius / 100;
+
         const positions = [
-            0, 0,
-            0, props.radius / 100,
-            props.radius / 75, 0
+            (r / 10) * cos(thetaNormal270), (r / 10) * sin(thetaNormal270),
+            r * cos(theta), r * sin(theta),
+            (r / 10) * cos(thetaNormal90), (r / 10) * sin(thetaNormal90)
         ];
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 

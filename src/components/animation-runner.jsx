@@ -40,7 +40,9 @@ class AnimationRunner extends Component {
         } else {
             // if we don't have the context yet, set it (if canvas is available)
             if (canvas) {
-                const gl = canvas.getContext('webgl');
+                const gl = canvas.getContext('webgl', {
+                    preserveDrawingBuffer: true
+                });
 
                 this.props.dispatch(setCanvasContext3d(gl));
                 gl.viewport(0, 0, document.documentElement.clientWidth, document.documentElement.clientHeight);
