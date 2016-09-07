@@ -38,8 +38,7 @@ export const reducer = (state = initialState, action) => {
         case types.SET_CANVAS_SIZE:
             return Object.assign({}, state, {
                 canvasWidth: action.canvasWidth,
-                canvasHeight: action.canvasHeight,
-                forceFullRender: true
+                canvasHeight: action.canvasHeight
             });
         case types.SET_RENDERER:
             return Object.assign({}, state, {
@@ -76,6 +75,11 @@ export const reducer = (state = initialState, action) => {
                 },
                 past: ms < 0,
                 forceFullRender: false
+            });
+        }
+        case types.FORCE_FULL_RENDER: {
+            return Object.assign({}, state, {
+                forceFullRender: true
             });
         }
         default:

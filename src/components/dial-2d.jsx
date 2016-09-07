@@ -1,8 +1,8 @@
 const dial2d = (props) => {
     const ctx = props.canvasContext;
     const canvasMin = Math.min(props.canvasWidth, props.canvasHeight);
-    const r = canvasMin * props.radius / 100;
-    const lineWidth = canvasMin * props.stroke / 100;
+    const r = canvasMin * (props.radius / 100);
+    const lineWidth = canvasMin * (props.stroke / 100);
     const pos = props.pos;
     const oldPos = props.prevPos;
     const divisor = props.max;
@@ -11,38 +11,32 @@ const dial2d = (props) => {
         return false;
     }
 
-    const startRad = 1.5 * Math.PI;
-    const endRad = 3.5 * Math.PI;
+    const startRad = -0.5 * Math.PI; // -90 deg
+    const endRad = 1.5 * Math.PI; // +270 deg
     const x = props.canvasWidth / 2;
     const y = props.canvasHeight / 2;
-    const rad = (1.5 + pos / divisor * 2) * Math.PI;
+    const rad = (-0.5 + (pos / divisor) * 2) * Math.PI;
 
     if (oldPos < pos || props.forceFullRender) {
-        // if the dial has cycled (i.e., oldPos = 1 sec, new pos = 59 sec)
-        if (oldPos > 0) {
-            // if oldPos wasn't zero, we still have some of the old dial to clear
-            ctx.beginPath();
-            ctx.arc(x, y, r, startRad, rad);
-            ctx.lineWidth = lineWidth + 2;
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.strokeStyle = '#000';
-            ctx.stroke();
-        }
         // redraw a fully-solid dial
         ctx.beginPath();
-        ctx.arc(x, y, r, startRad, endRad);
         ctx.lineWidth = lineWidth;
         ctx.globalCompositeOperation = 'source-over';
-        ctx.strokeStyle = 'rgba(51,51,51,0.67)';
+        ctx.strokeStyle = '#888';
+        ctx.arc(x, y, r, 0, 2 * Math.PI);
         ctx.stroke();
+        if (props.forceFullRender) {
+            console.log('forceFullRender radius', props.radius, 'pos', pos, 'oldPos', oldPos);
+            console.log('startRad', startRad, 'endRad', endRad, 'rad', rad);
+        }
     }
     // clear the white part of the dial
     // TODO: is it faster for us to calculate the oldRad here and only clear what we need to?
     ctx.beginPath();
-    ctx.arc(x, y, r, rad, endRad);
     ctx.lineWidth = lineWidth + 2;
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.strokeStyle = '#000';
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle = '#fff';
+    ctx.arc(x, y, r, rad, endRad);
     ctx.stroke();
 
     return false;

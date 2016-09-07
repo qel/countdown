@@ -32,3 +32,7 @@ export const stopAnimation = () => ({
 export const tick = () => ({
     type: types.TICK
 });
+
+export const forceFullRender = () => ({
+    type: types.FORCE_FULL_RENDER
+});

@@ -31,21 +31,23 @@ class AnimationRunner extends Component {
     }
 
     getCanvasContext3d(canvas) {
-        if (this.props.canvasContext3d) {
-            // if we're re-rendering and we already have our context,
-            // this is probably a resize, so set the viewport dimensions
-            const gl = this.props.canvasContext3d;
+        if (this.props.webglEnabled) {
+            if (this.props.canvasContext3d) {
+                // if we're re-rendering and we already have our context,
+                // this is probably a resize, so set the viewport dimensions
+                const gl = this.props.canvasContext3d;
 
-            gl.viewport(0, 0, this.props.canvasWidth, this.props.canvasHeight);
-        } else {
-            // if we don't have the context yet, set it (if canvas is available)
-            if (canvas) {
-                const gl = canvas.getContext('webgl', {
-                    preserveDrawingBuffer: true
-                });
+                gl.viewport(0, 0, this.props.canvasWidth, this.props.canvasHeight);
+            } else {
+                // if we don't have the context yet, set it (if canvas is available)
+                if (canvas) {
+                    const gl = canvas.getContext('webgl', {
+                        preserveDrawingBuffer: true
+                    });
 
-                this.props.dispatch(setCanvasContext3d(gl));
-                gl.viewport(0, 0, document.documentElement.clientWidth, document.documentElement.clientHeight);
+                    this.props.dispatch(setCanvasContext3d(gl));
+                    gl.viewport(0, 0, document.documentElement.clientWidth, document.documentElement.clientHeight);
+                }
             }
         }
     }
@@ -62,6 +64,26 @@ class AnimationRunner extends Component {
     }
 
     render() {
+        console.log('AnimationRunner render');
+
+        let webglCanvas = null;
+
+        if (this.props.webglEnabled) {
+            webglCanvas = (
+                <canvas
+                    ref={(c) => {this.getCanvasContext3d(c);}}
+                    width={this.props.canvasWidth}
+                    height={this.props.canvasHeight}
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        zIndex: 400
+                    }}
+                />
+            );
+        }
+
         return (
             <div>
                 <canvas
@@ -75,17 +97,7 @@ class AnimationRunner extends Component {
                         zIndex: 200
                     }}
                 />
-                <canvas
-                    ref={(c) => {this.getCanvasContext3d(c);}}
-                    width={this.props.canvasWidth}
-                    height={this.props.canvasHeight}
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        zIndex: 400
-                    }}
-                />
+                {webglCanvas}
                 {this.props.children}
             </div>
         );
@@ -93,6 +105,7 @@ class AnimationRunner extends Component {
 }
 
 AnimationRunner.propTypes = {
+    webglEnabled: PropTypes.bool,
     children: PropTypes.any,
     dispatch: PropTypes.func.isRequired,
     canvasContext: PropTypes.object,
@@ -100,6 +113,10 @@ AnimationRunner.propTypes = {
     canvasWidth: PropTypes.number.isRequired,
     canvasHeight: PropTypes.number.isRequired,
     animationRunning: PropTypes.bool.isRequired
+};
+
+AnimationRunner.defaultProps = {
+    webglEnabled: true
 };
 
 const mapStateToProps = (state) => ({

@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 
 import initializeCountdown from '../util/initialize-countdown';
-import {setTargetTime} from '../redux/actions';
+import {setTargetTime, forceFullRender} from '../redux/actions';
 import Dial from './dial';
 
 class Countdown extends Component {
@@ -12,22 +12,36 @@ class Countdown extends Component {
         props.dispatch(setTargetTime(this.state.targetTime));
     }
 
+    componentDidUpdate(prevProps) {
+        const props = this.props;
+
+        if (prevProps.canvasHeight !== props.canvasHeight || prevProps.canvasWidth !== props.canvasWidth) {
+            const ctx = props.canvasContext;
+            const gl = props.canvasContext3d;
+
+            // When the size changes we clear the canvas...
+            if (ctx) {
+                ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
+            }
+            if (gl) {
+                // Set clear color to black, fully opaque
+                gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                // Enable depth testing
+                gl.enable(gl.DEPTH_TEST);
+                // Near things obscure far things
+                gl.depthFunc(gl.LEQUAL);
+                // Clear the color as well as the depth buffer.
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            }
+
+            // Then we'll force the actual drawing components to rerender.
+            props.dispatch(forceFullRender());
+        }
+    }
+
     render() {
         const props = this.props;
         const componentState = this.state;
-        const gl = props.canvasContext3d;
-
-        // // Countdown hits its render before the child Dials, so we can clear the canvas here.
-        // if (gl) {
-        //     // Set clear color to black, fully opaque
-        //     gl.clearColor(0.0, 0.0, 0.0, 1.0);
-        //     // Enable depth testing
-        //     gl.enable(gl.DEPTH_TEST);
-        //     // Near things obscure far things
-        //     gl.depthFunc(gl.LEQUAL);
-        //     // Clear the color as well as the depth buffer.
-        //     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        // }
 
         let offsetMessage = null;
         if (componentState.offsetMessage) {
@@ -50,7 +64,7 @@ class Countdown extends Component {
                     fontFamily: 'Oldenburg',
                     fontSize: `${100 / 500 * props.canvasWidth}%`,
                     position: 'absolute',
-                    color: '#ccf'
+                    color: '#808'
                 }}
             >
                 <div
@@ -85,8 +99,8 @@ class Countdown extends Component {
 }
 
 Countdown.propTypes = {
-    dispatch: PropTypes.func.isRequired,
     places: PropTypes.number.isRequired,
+    dispatch: PropTypes.func.isRequired,
     canvasWidth: PropTypes.number.isRequired,
     canvasHeight: PropTypes.number.isRequired,
     animationRunning: PropTypes.bool.isRequired,
