@@ -57,7 +57,7 @@ export const reducer = (state = initialState, action) => {
                 animationRunning: false
             });
         case types.TICK: {
-            const ms = (state.targetTime - Date.now()) | 0;
+            const ms = state.targetTime - Date.now();
             return Object.assign({}, state, {
                 delta: {
                     days: ms / (1000 * 60 * 60 * 24) | 0,
