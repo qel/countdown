@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {polyfill} from 'raf';
+import ObjectAssign from 'es6-object-assign';
 
 import {setCanvasContext, setCanvasContext3d, setCanvasSize, tick} from '../redux/actions';
 
@@ -12,14 +13,20 @@ class AnimationRunner extends Component {
         this.resizeCanvas = ::this.resizeCanvas;
         this.animationLoop = ::this.animationLoop;
 
+        if (!window.requestAnimationFrame) {
+            console.log('polyfilling requestAnimationFrame...');
+            polyfill();
+        }
+        if (!window.Object.assign) {
+            console.log('polyfilling Object.assign...');
+            ObjectAssign.polyfill();
+        }
+
         document.body.style.overflow = 'hidden';
         window.addEventListener('resize', this.resizeCanvas, false);
     }
 
     componentDidMount() {
-        if (!window.requestAnimationFrame) {
-            polyfill();
-        }
         this.resizeCanvas();
         this.animationLoop();
     }
