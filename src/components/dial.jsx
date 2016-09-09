@@ -70,7 +70,7 @@ class Dial extends Component {
     componentWillReceiveProps(nextProps) {
         const gl = nextProps.canvasContext3d;
 
-        if (gl && this.state.attrib === null) {
+        if (gl && this.props.attrib === null) {
             const vertexShader = createShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER_SRC);
             const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER_SRC);
             const program = createProgram(gl, vertexShader, fragmentShader);
@@ -80,13 +80,6 @@ class Dial extends Component {
             gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 
             gl.enableVertexAttribArray(attrib);
-            gl.vertexAttribPointer(attrib, // lookup current ARRAY_BUFFER, binds attrib to its buffer
-                2,          // size: 2 components per iteration (get x and y from buffer, leave the default z and w)
-                gl.FLOAT,   // type: the data is 32-bit floats
-                false,      // normalize: don't normalize the data
-                0,          // stride: 0 = move forward size * sizeof(type) each iteration to get the next position
-                0           // offset: 0 = start at the beginning of the buffer
-            );
 
             gl.useProgram(program);
 
@@ -119,7 +112,7 @@ class Dial extends Component {
         const pi = Math.PI;
 
         // theta: position in radians
-        const theta = (props.pos / props.max) * pi * 2;
+        const theta = ((props.pos / props.max) - 0.25) * pi * 2;
         const thetaNormal90 = theta + pi / 2;
         const thetaNormal270 = theta + pi + pi / 2;
 
@@ -127,10 +120,18 @@ class Dial extends Component {
         const r = props.radius / 100;
 
         const positions = [
-            (r / 10) * cos(thetaNormal270), (r / 10) * sin(thetaNormal270),
-            r * cos(theta), r * sin(theta),
-            (r / 10) * cos(thetaNormal90), (r / 10) * sin(thetaNormal90)
+            (r / 10) * cos(thetaNormal270), (r / 10) * sin(thetaNormal270) * -1,
+            r * cos(theta), r * sin(theta) * -1,
+            (r / 10) * cos(thetaNormal90), (r / 10) * sin(thetaNormal90) * -1
         ];
+
+        gl.vertexAttribPointer(attrib, // lookup current ARRAY_BUFFER, binds attrib to its buffer
+            2,          // size: 2 components per iteration (get x and y from buffer, leave the default z and w)
+            gl.FLOAT,   // type: the data is 32-bit floats
+            false,      // normalize: don't normalize the data
+            0,          // stride: 0 = move forward size * sizeof(type) each iteration to get the next position
+            0           // offset: 0 = start at the beginning of the buffer
+        );
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
         try {

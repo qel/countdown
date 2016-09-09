@@ -22,7 +22,10 @@ const initialState = {
         milliseconds: 0
     },
     past: false,
-    forceFullRender: false
+    forceFullRender: false,
+    attrib: null,
+    bufferSize: 0,
+    bufferOffset: null
 };
 
 export const reducer = (state = initialState, action) => {
@@ -47,6 +50,17 @@ export const reducer = (state = initialState, action) => {
         case types.SET_TARGET_TIME:
             return Object.assign({}, state, {
                 targetTime: action.targetTime
+            });
+        case types.SET_ATTRIB:
+            return Object.assign({}, state, {
+                attrib: action.attrib
+            });
+        case types.REGISTER_VERTEX_BUFFER:
+            return Object.assign({}, state, {
+                bufferSize: state.bufferSize + action.bufferSize
+                bufferOffset: Object.assign({}, state.bufferOffset, {
+                    action.uuid: state.bufferSize
+                })
             });
         case types.START_ANIMATION:
             return Object.assign({}, state, {
