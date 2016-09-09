@@ -14,25 +14,14 @@ class Countdown extends Component {
 
     componentDidUpdate(prevProps) {
         const props = this.props;
+        const ctx = props.canvasContext;
 
-        if (prevProps.canvasHeight !== props.canvasHeight || prevProps.canvasWidth !== props.canvasWidth) {
-            const ctx = props.canvasContext;
-            const gl = props.canvasContext3d;
+        if (ctx && (prevProps.canvasHeight !== props.canvasHeight || prevProps.canvasWidth !== props.canvasWidth)) {
+            // Our 2D canvas rendering only needs the canvas cleared when we resize.
+            // When we resize, we clear the canvas and dispatch a FORCE_FULL_RENDER action.
 
             // When the size changes we clear the canvas...
-            if (ctx) {
-                ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
-            }
-            if (gl) {
-                // Set clear color to black, fully opaque
-                gl.clearColor(0.0, 0.0, 0.0, 1.0);
-                // Enable depth testing
-                gl.enable(gl.DEPTH_TEST);
-                // Near things obscure far things
-                gl.depthFunc(gl.LEQUAL);
-                // Clear the color as well as the depth buffer.
-                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-            }
+            ctx.clearRect(0, 0, props.canvasWidth, props.canvasHeight);
 
             // Then we'll force the actual drawing components to rerender.
             props.dispatch(forceFullRender());
@@ -42,6 +31,20 @@ class Countdown extends Component {
     render() {
         const props = this.props;
         const componentState = this.state;
+        const gl = props.canvasContext3d;
+
+        if (gl) {
+            // For WebGL, we always clear the canvas before each render
+
+            // Set clear color to transparent
+            gl.clearColor(0.0, 0.0, 0.0, 0.0);
+            // Enable depth testing
+            gl.enable(gl.DEPTH_TEST);
+            // Near things obscure far things
+            gl.depthFunc(gl.LEQUAL);
+            // Clear the color as well as the depth buffer.
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        }
 
         let offsetMessage = null;
         if (componentState.offsetMessage) {
@@ -86,12 +89,7 @@ class Countdown extends Component {
                 {offsetMessage}
                 <Dial radius={44} stroke={6} pos={props.hours} prevPos={props.prev.hours} max={24} />
                 <Dial radius={36} stroke={6} pos={props.minutes} prevPos={props.prev.minutes} max={60} />
-                <Dial
-                    radius={28}
-                    stroke={6}
-                    pos={props.seconds + props.milliseconds / 1000}
-                    prevPos={props.prev.seconds} max={60}
-                />
+                <Dial radius={28} stroke={6} pos={props.seconds} prevPos={props.prev.seconds} max={60} />
                 <Dial radius={20} stroke={6} pos={props.milliseconds} prevPos={props.prev.milliseconds} max={1000} />
             </div>
         );

@@ -63,26 +63,24 @@ class Dial extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            positionBuffer: null
+            attrib: null
         };
     }
 
     componentWillReceiveProps(nextProps) {
         const gl = nextProps.canvasContext3d;
 
-        if (gl && this.state.positionBuffer === null) {
-            console.log('--- initializing webgl for dial with radius', this.props.radius);
-
+        if (gl && this.state.attrib === null) {
             const vertexShader = createShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER_SRC);
             const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER_SRC);
             const program = createProgram(gl, vertexShader, fragmentShader);
 
-            const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
-            const positionBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            const attrib = gl.getAttribLocation(program, 'a_position');
+            const buffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 
-            gl.enableVertexAttribArray(positionAttributeLocation);
-            gl.vertexAttribPointer(positionAttributeLocation, // lookup current ARRAY_BUFFER, binds pointer to positionBuffer
+            gl.enableVertexAttribArray(attrib);
+            gl.vertexAttribPointer(attrib, // lookup current ARRAY_BUFFER, binds attrib to its buffer
                 2,          // size: 2 components per iteration (get x and y from buffer, leave the default z and w)
                 gl.FLOAT,   // type: the data is 32-bit floats
                 false,      // normalize: don't normalize the data
@@ -93,7 +91,7 @@ class Dial extends Component {
             gl.useProgram(program);
 
             this.setState({
-                positionBuffer
+                attrib
             });
         }
     }
@@ -101,6 +99,7 @@ class Dial extends Component {
     render() {
         const props = this.props;
         const gl = props.canvasContext3d;
+        const attrib = this.state.attrib;
 
         if (!gl) {
             // fallback to 2d context if we don't have webgl
@@ -110,16 +109,10 @@ class Dial extends Component {
             }
             return dial2d(props);
         }
-
-        if (this.state.positionBuffer === null) {
-            console.log('!!! empty positionBuffer !!!');
+        if (attrib === null) {
+            // bail out if we have a WebGL context but the Attribute hasn't initialized yet.
+            return false;
         }
-
-        // if (props.radius > 20) {
-        //     return false;
-        // }
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.state.positionBuffer);
 
         const sin = Math.sin;
         const cos = Math.cos;
@@ -147,8 +140,8 @@ class Dial extends Component {
                 3               // count: 3 pairs of x,y values
             );
         } catch (ex) {
-            console.log('drawArrays failed', 'this.state.positionBuffer =');
-            console.dir(this.state.positionBuffer);
+            console.log('drawArrays failed', 'this.state.attrib =');
+            console.dir(this.state.attrib);
         }
 
 

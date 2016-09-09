@@ -14,11 +14,9 @@ class AnimationRunner extends Component {
         this.animationLoop = ::this.animationLoop;
 
         if (!window.requestAnimationFrame) {
-            console.log('polyfilling requestAnimationFrame...');
             polyfill();
         }
         if (!window.Object.assign) {
-            console.log('polyfilling Object.assign...');
             ObjectAssign.polyfill();
         }
 
@@ -71,8 +69,6 @@ class AnimationRunner extends Component {
     }
 
     render() {
-        console.log('AnimationRunner render');
-
         let webglCanvas = null;
 
         if (this.props.webglEnabled) {
