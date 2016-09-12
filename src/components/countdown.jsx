@@ -98,7 +98,10 @@ class Countdown extends Component {
 
 Countdown.propTypes = {
     places: PropTypes.number.isRequired,
+    // redux
     dispatch: PropTypes.func.isRequired,
+    canvasContext: PropTypes.object,
+    canvasContext3d: PropTypes.object,
     canvasWidth: PropTypes.number.isRequired,
     canvasHeight: PropTypes.number.isRequired,
     animationRunning: PropTypes.bool.isRequired,

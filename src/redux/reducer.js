@@ -23,8 +23,9 @@ const initialState = {
     },
     past: false,
     forceFullRender: false,
-    attrib: null,
+    attrib: -1,
     bufferSize: 0,
+    bufferAllocated: false,
     bufferOffset: null
 };
 
@@ -57,10 +58,15 @@ export const reducer = (state = initialState, action) => {
             });
         case types.REGISTER_VERTEX_BUFFER:
             return Object.assign({}, state, {
-                bufferSize: state.bufferSize + action.bufferSize
+                bufferSize: state.bufferSize + action.bufferSize,
+                bufferAllocated: false,
                 bufferOffset: Object.assign({}, state.bufferOffset, {
-                    action.uuid: state.bufferSize
+                    [action.uuid]: state.bufferSize
                 })
+            });
+        case types.SET_BUFFER_ALLOCATED:
+            return Object.assign({}, state, {
+                bufferAllocated: true
             });
         case types.START_ANIMATION:
             return Object.assign({}, state, {

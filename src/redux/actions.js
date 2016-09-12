@@ -28,7 +28,12 @@ export const setAttrib = (attrib) => ({
 
 export const registerVertexBuffer = (uuid, bufferSize) => ({
     type: types.REGISTER_VERTEX_BUFFER,
+    uuid,
     bufferSize
+});
+
+export const setBufferAllocated = () => ({
+    type: types.SET_BUFFER_ALLOCATED
 });
 
 export const startAnimation = () => ({
