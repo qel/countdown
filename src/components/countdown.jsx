@@ -33,19 +33,6 @@ class Countdown extends Component {
         const componentState = this.state;
         const gl = props.canvasContext3d;
 
-        if (gl) {
-            // For WebGL, we always clear the canvas before each render
-
-            // Set clear color to transparent
-            gl.clearColor(0.0, 0.0, 0.0, 0.0);
-            // Enable depth testing
-            gl.enable(gl.DEPTH_TEST);
-            // Near things obscure far things
-            gl.depthFunc(gl.LEQUAL);
-            // Clear the color as well as the depth buffer.
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        }
-
         let offsetMessage = null;
         if (componentState.offsetMessage) {
             offsetMessage = (

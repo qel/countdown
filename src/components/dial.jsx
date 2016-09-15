@@ -5,7 +5,7 @@ import {v4} from 'node-uuid';
 import {registerVertexBuffer} from '../redux/actions';
 import dial2d from './dial-2d';
 
-const BUFFER_SIZE = 24; // 3 vertexes * 2 components * 4 bytes (32-bit float) = 24
+const BUFFER_SIZE = 24; // 3 vertexes * 2 components (x,y) * 4 bytes (32-bit float) = 24
 
 class Dial extends Component {
     constructor(props) {
@@ -28,9 +28,7 @@ class Dial extends Component {
             return dial2d(props);
         }
 
-        const attrib = props.attrib;
-
-        if (attrib === -1 || props.bufferOffset === null) {
+        if (props.bufferOffset === null) {
             // bail out if we're not initialized yet.
             return false;
         }
@@ -62,33 +60,7 @@ class Dial extends Component {
             (r / 10) * cos(thetaNormal90), (r / 10) * sin(thetaNormal90) * -1
         ];
 
-        gl.vertexAttribPointer(attrib, // lookup current ARRAY_BUFFER, binds attrib to its buffer
-            2,              // size: 2 components per iteration (get x and y from buffer, leave the default z and w)
-            gl.FLOAT,       // type: the data is 32-bit floats
-            false,          // normalize: don't normalize the data
-            0,              // stride: 0 = move forward size * sizeof(type) each iteration to get the next position
-            bufferOffset    // offset: 0 = start at the beginning of the buffer
-        );
-
-        console.log('bufferSubData bufferOffset', bufferOffset, 'vertices', vertices.length);
-        try {
-            gl.bufferSubData(gl.ARRAY_BUFFER, bufferOffset, new Float32Array(vertices));
-        } catch (ex) {
-            console.log('bufferSubData failed', 'attrib', attrib);
-        }
-
-        // try {
-        //     gl.drawArrays(
-        //         gl.TRIANGLES,   // primitiveType
-        //         bufferOffset,   // offset
-        //         3               // count: 3 pairs of x,y values
-        //     );
-        // } catch (ex) {
-        //     console.log('drawArrays failed', 'this.state.attrib =');
-        //     console.dir(this.state.attrib);
-        // }
-
-
+        gl.bufferSubData(gl.ARRAY_BUFFER, bufferOffset, new Float32Array(vertices));
 
 
 
@@ -111,7 +83,6 @@ Dial.propTypes = {
     canvasWidth: PropTypes.number.isRequired,
     canvasHeight: PropTypes.number.isRequired,
     forceFullRender: PropTypes.bool.isRequired,
-    attrib: PropTypes.number.isRequired,
     bufferOffset: PropTypes.object,
     bufferAllocated: PropTypes.bool.isRequired
 };
@@ -121,9 +92,7 @@ const mapStateToProps = (state) => ({
     canvasContext3d: state.canvasContext3d,
     canvasWidth: state.canvasWidth,
     canvasHeight: state.canvasHeight,
-    renderer: state.renderer,
     forceFullRender: state.forceFullRender,
-    attrib: state.attrib,
     bufferOffset: state.bufferOffset,
     bufferAllocated: state.bufferAllocated
 });

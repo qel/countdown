@@ -21,11 +21,6 @@ export const setTargetTime = (targetTime) => ({
     targetTime
 });
 
-export const setAttrib = (attrib) => ({
-    type: types.SET_ATTRIB,
-    attrib
-});
-
 export const registerVertexBuffer = (uuid, bufferSize) => ({
     type: types.REGISTER_VERTEX_BUFFER,
     uuid,

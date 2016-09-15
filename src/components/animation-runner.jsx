@@ -3,8 +3,7 @@ import {connect} from 'react-redux';
 import {polyfill} from 'raf';
 import ObjectAssign from 'es6-object-assign';
 
-import {setCanvasContext, setCanvasContext3d, setCanvasSize, setAttrib, setBufferAllocated, tick}
-    from '../redux/actions';
+import {setCanvasContext, setCanvasContext3d, setCanvasSize, setBufferAllocated, tick} from '../redux/actions';
 
 const VERTEX_SHADER_SRC = `
     // an attribute will receive data from a buffer
@@ -66,6 +65,12 @@ class AnimationRunner extends Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            initialized: false,
+            buffer: null,
+            attrib: -1
+        };
+
         this.getCanvasContext = ::this.getCanvasContext;
         this.getCanvasContext3d = ::this.getCanvasContext3d;
         this.resizeCanvas = ::this.resizeCanvas;
@@ -88,46 +93,53 @@ class AnimationRunner extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const props = this.props;
         const gl = nextProps.canvasContext3d;
 
-        if (gl) {
-            if (nextProps.attrib === -1) {
-                // if we're the first component to get the WebGL context, let's setup the attrib
-                const vertexShader = createShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER_SRC);
-                const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER_SRC);
-                const program = createProgram(gl, vertexShader, fragmentShader);
+        if (gl && !this.state.initialized) {
 
-                const attrib = gl.getAttribLocation(program, 'a_position');
-                const buffer = gl.createBuffer();
-                gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            // if we have the WebGL context, initialize things
+            const vertexShader = createShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER_SRC);
+            const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER_SRC);
+            const program = createProgram(gl, vertexShader, fragmentShader);
+            const buffer = gl.createBuffer();
+            const attrib = gl.getAttribLocation(program, 'a_position');
 
-                gl.enableVertexAttribArray(attrib);
+            // Set clear color to transparent
+            gl.clearColor(0.0, 0.0, 0.0, 0.0);
+            // Enable depth testing
+            gl.enable(gl.DEPTH_TEST);
+            // Near things obscure far things
+            gl.depthFunc(gl.LEQUAL);
 
-                gl.useProgram(program);
-
-                this.props.dispatch(setAttrib(attrib));
-            }
-        }
-
-        if (nextProps.attrib !== -1 && nextProps.bufferSize > 0 && !nextProps.bufferAllocated) {
-            // The vertex buffer needs allocated (or re-allocated).
-
-            console.log('AnimationRunner componentWillReceiveProps()');
-            console.log('Reallocating: attrib', nextProps.attrib, 'bufferSize', nextProps.bufferSize);
-
-            const vertices = new Array(nextProps.bufferSize / 4).fill(0);
-
-            gl.vertexAttribPointer(nextProps.attrib, // lookup current ARRAY_BUFFER, binds attrib to its buffer
+            gl.useProgram(program);
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            gl.vertexAttribPointer(attrib, // lookup current ARRAY_BUFFER, binds attrib to its buffer
                 2,              // size: 2 components per iteration (get x and y from buffer, leave the default z and w)
                 gl.FLOAT,       // type: the data is 32-bit floats
                 false,          // normalize: don't normalize the data
                 0,              // stride: 0 = move forward size * sizeof(type) each iteration to get the next position
                 0               // offset: 0 = start at the beginning of the buffer
             );
+            gl.enableVertexAttribArray(attrib);
+
+            this.setState({
+                initialized: true,
+                attrib,
+                buffer
+            });
+        }
+    }
+
+    componentWillUpdate(nextProps, nextState) {
+        if (nextState.initialized && nextProps.bufferSize > 0 && !nextProps.bufferAllocated) {
+
+            // The vertex buffer needs allocated (or re-allocated).
+            const gl = nextProps.canvasContext3d;
+            const vertices = new Array(nextProps.bufferSize / 4).fill(0);
+
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
-            props.dispatch(setBufferAllocated());
+            nextProps.dispatch(setBufferAllocated());
         }
     }
 
@@ -167,19 +179,14 @@ class AnimationRunner extends Component {
         if (this.props.animationRunning) {
             const gl = this.props.canvasContext3d;
             const bufferSize = this.props.bufferSize;
-            if (gl) {
-                gl.vertexAttribPointer(this.props.attrib, // lookup current ARRAY_BUFFER, binds attrib to its buffer
-                    2,          // size: 2 components per iteration (get x and y from buffer, leave the default z and w)
-                    gl.FLOAT,   // type: the data is 32-bit floats
-                    false,      // normalize: don't normalize the data
-                    0,          // stride: 0 = move forward size * sizeof(type) each iteration to get the next position
-                    0           // offset: 0 = start at the beginning of the buffer
-                );
-                console.log('drawArrays() bufferSize', bufferSize, 'bufferSize / 8', bufferSize / 8);
+            if (gl && bufferSize > 0) {
+                // Clear the color as well as the depth buffer.
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
                 gl.drawArrays(
                     gl.TRIANGLES,   // primitiveType
                     0,              // offset
-                    bufferSize / 8  // count: 3 pairs of x,y values
+                    bufferSize / 8  // count: 4-byte floats in (x,y) pairs
                 );
             }
             this.props.dispatch(tick());
@@ -236,7 +243,6 @@ AnimationRunner.propTypes = {
     canvasWidth: PropTypes.number.isRequired,
     canvasHeight: PropTypes.number.isRequired,
     animationRunning: PropTypes.bool.isRequired,
-    attrib: PropTypes.number.isRequired,
     bufferSize: PropTypes.number.isRequired,
     bufferAllocated: PropTypes.bool.isRequired
 };
@@ -251,7 +257,6 @@ const mapStateToProps = (state) => ({
     canvasWidth: state.canvasWidth,
     canvasHeight: state.canvasHeight,
     animationRunning: state.animationRunning,
-    attrib: state.attrib,
     bufferSize: state.bufferSize,
     bufferAllocated: state.bufferAllocated
 });

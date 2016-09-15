@@ -23,7 +23,6 @@ const initialState = {
     },
     past: false,
     forceFullRender: false,
-    attrib: -1,
     bufferSize: 0,
     bufferAllocated: false,
     bufferOffset: null
@@ -51,10 +50,6 @@ export const reducer = (state = initialState, action) => {
         case types.SET_TARGET_TIME:
             return Object.assign({}, state, {
                 targetTime: action.targetTime
-            });
-        case types.SET_ATTRIB:
-            return Object.assign({}, state, {
-                attrib: action.attrib
             });
         case types.REGISTER_VERTEX_BUFFER:
             return Object.assign({}, state, {
