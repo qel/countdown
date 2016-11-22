@@ -5,7 +5,8 @@ import {v4} from 'node-uuid';
 import {registerVertexBuffer} from '../redux/actions';
 import dial2d from './dial-2d';
 
-const BUFFER_SIZE = 24; // 3 vertexes * 2 components (x,y) * 4 bytes (32-bit float) = 24
+const TRIANGLES = 90;
+const BUFFER_SIZE = VERTICES * 24; // 3 vertices * 2 components (x,y) * 4 bytes (32-bit float) = 24
 
 class Dial extends Component {
     constructor(props) {
@@ -54,11 +55,17 @@ class Dial extends Component {
         // three 2d points
         const r = props.radius / 100;
 
-        const vertices = [
-            (r / 10) * cos(thetaNormal270), (r / 10) * sin(thetaNormal270) * -1,
-            r * cos(theta), r * sin(theta) * -1,
-            (r / 10) * cos(thetaNormal90), (r / 10) * sin(thetaNormal90) * -1
-        ];
+        // const vertices = [
+        //     (r / 10) * cos(thetaNormal270), (r / 10) * sin(thetaNormal270) * -1,
+        //     r * cos(theta), r * sin(theta) * -1,
+        //     (r / 10) * cos(thetaNormal90), (r / 10) * sin(thetaNormal90) * -1
+        // ];
+
+        let vertices = [];
+
+        for (let i = 0; i < TRIANGLES; i++) {
+                        
+        }
 
         gl.bufferSubData(gl.ARRAY_BUFFER, bufferOffset, new Float32Array(vertices));
 

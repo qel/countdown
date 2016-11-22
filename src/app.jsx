@@ -10,7 +10,7 @@ import NickCage from './components/nick-cage';
 
 ReactDOM.render(
     <Provider store={createStore(reducer, window.devToolsExtension && window.devToolsExtension())}>
-        <AnimationRunner webglEnabled={false}>
+        <AnimationRunner webglEnabled>
             <Countdown places={2} />
             <NickCage disabled />
         </AnimationRunner>
