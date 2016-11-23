@@ -8,7 +8,7 @@ const initializeCountdown = () => {
     let queryString = window.location.search.substr(1);
 
     if (queryString === '') {
-        queryString = 'm=12&d=15&h=8&tz="America/Chicago"';
+        queryString = 'm=12&d=15&h=14&tz="America/Chicago"';
     }
 
     // parse the query string

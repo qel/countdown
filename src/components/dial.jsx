@@ -5,8 +5,8 @@ import {v4} from 'node-uuid';
 import {registerVertexBuffer} from '../redux/actions';
 import dial2d from './dial-2d';
 
-const TRIANGLES = 90;
-const BUFFER_SIZE = VERTICES * 24; // 3 vertices * 2 components (x,y) * 4 bytes (32-bit float) = 24
+const TRIANGLES = 180;
+const BUFFER_SIZE = TRIANGLES * 24; // 3 vertices * 2 components (x,y) * 4 bytes (32-bit float) = 24
 
 class Dial extends Component {
     constructor(props) {
@@ -47,13 +47,8 @@ class Dial extends Component {
         const cos = Math.cos;
         const pi = Math.PI;
 
-        // theta: position in radians
-        const theta = ((props.pos / props.max) - 0.25) * pi * 2;
-        const thetaNormal90 = theta + pi / 2;
-        const thetaNormal270 = theta + pi + pi / 2;
-
         // three 2d points
-        const r = props.radius / 100;
+        const r = props.radius / 80;
 
         // const vertices = [
         //     (r / 10) * cos(thetaNormal270), (r / 10) * sin(thetaNormal270) * -1,
@@ -61,10 +56,19 @@ class Dial extends Component {
         //     (r / 10) * cos(thetaNormal90), (r / 10) * sin(thetaNormal90) * -1
         // ];
 
-        let vertices = [];
+        const vertices = [];
 
         for (let i = 0; i < TRIANGLES; i++) {
-                        
+            // theta: position in radians
+            const thetaA = ((props.pos / props.max) / TRIANGLES * i - 0.25) * pi * 2;
+            const thetaB = ((props.pos / props.max) / TRIANGLES * (i + 1) - 0.25) * pi * 2;
+            const thetaC = ((props.pos / props.max) / TRIANGLES * (i + 0.5) - 0.25) * pi * 2;
+
+            vertices.push(...[
+                r * cos(thetaA), r * sin(thetaA) * -1,
+                r * cos(thetaB), r * sin(thetaB) * -1,
+                (r * 0.8) * cos(thetaC), (r * 0.8) * sin(thetaC) * -1
+            ]);
         }
 
         gl.bufferSubData(gl.ARRAY_BUFFER, bufferOffset, new Float32Array(vertices));

@@ -36,7 +36,7 @@ class Countdown extends Component {
         let offsetMessage = null;
         if (componentState.offsetMessage) {
             offsetMessage = (
-                <span style={{fontSize: `${65 / 500 * props.canvasWidth}%`}}>
+                <span style={{fontSize: `${props.canvasWidth / 48}px`}}>
                     &nbsp;
                     ({componentState.offsetMessage})
                 </span>
@@ -52,15 +52,15 @@ class Countdown extends Component {
                     zIndex: 300,
                     textAlign: 'center',
                     fontFamily: 'Oldenburg',
-                    fontSize: `${100 / 500 * props.canvasWidth}%`,
+                    fontSize: `${props.canvasWidth / 32}px`,
                     position: 'absolute',
-                    color: '#808'
+                    color: '#000'
                 }}
             >
                 <div
                     style={{
                         fontFamily: 'Faster One',
-                        fontSize: `${100 / 600 * (props.canvasWidth ** 0.8)}px`
+                        fontSize: `${props.canvasWidth / 25}px`
                     }}
                 >
                     {props.days + ' days ' + props.hours + ' hr. ' + props.minutes + ' min. '
