@@ -28,7 +28,7 @@ const initializeCountdown = () => {
         const queryObj = JSON.parse('{' + queryString.split('&')
             .map(x => {
                 const kvp = x.split('=');
-                return '"' + kvp[0] + '":' + kvp[1];
+                return '"' + kvp[0] + '":' + (isNaN(kvp[1]) ? '"' + kvp[1] + '"' : kvp[1]);
             })
             .join(',') + '}');
 
