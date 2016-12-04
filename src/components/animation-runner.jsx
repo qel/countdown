@@ -26,7 +26,13 @@ const FRAGMENT_SHADER_SRC = `
     void main() {
         // gl_FragColor is a special variable a fragment shader
         // is responsible for setting
-        gl_FragColor = vec4(1, 0, 0.5, 1); // return redish-purple
+        gl_FragColor = vec4(1, 0, 0.4, 0.8); // return redish-purple
+        //gl_FragColor = vec4(0.776, 0.773, 0.996, 1); // return @syntax-color-variable: #C6C5FE; = 198,197,254
+        //gl_FragColor = vec4(0.588, 0.749, 0.996, 1); // return @syntax-color-keyword: #96CBFE;  = 150,191,254
+        //gl_FragColor = vec4(0.6, 0.8, 0.6, 1);       // return @syntax-color-constant: #99CC99; = 153,204,153
+        //gl_FragColor = vec4(0.976, 0.933, 0.596, 1); // return @syntax-color-value: #F9EE98;    = 249,238,152
+        //gl_FragColor = vec4(0.855, 0.816, 0.522, 1); // return @syntax-color-function: #DAD085; = 218,208,133
+        //gl_FragColor = vec4(1, 0.824, 0.655, 1); // return &.syntax--constant: #FFD2A7;     = 255,210,167
     }
 `;
 
