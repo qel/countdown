@@ -54,13 +54,15 @@ class Countdown extends Component {
                     fontFamily: 'Oldenburg',
                     fontSize: `${props.canvasWidth / 32}px`,
                     position: 'absolute',
-                    color: '#000'
+                    color: '#F9EE98',
+                    backgroundColor: '#000'
                 }}
             >
                 <div
                     style={{
                         fontFamily: 'Faster One',
-                        fontSize: `${props.canvasWidth / 25}px`
+                        fontSize: `${props.canvasWidth / 25}px`,
+                        color: '#EDEDED',
                     }}
                 >
                     {props.days + ' days ' + props.hours + ' hr. ' + props.minutes + ' min. '
