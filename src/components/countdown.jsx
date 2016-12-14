@@ -76,10 +76,10 @@ class Countdown extends Component {
                 &nbsp;
                 {componentState.targetTZName}
                 {offsetMessage}
-                <Dial radius={44} stroke={6} pos={props.hours} prevPos={props.prev.hours} max={24} />
-                <Dial radius={36} stroke={6} pos={props.minutes} prevPos={props.prev.minutes} max={60} />
-                <Dial radius={28} stroke={6} pos={props.seconds} prevPos={props.prev.seconds} max={60} />
-                <Dial radius={20} stroke={6} pos={props.milliseconds} prevPos={props.prev.milliseconds} max={1000} />
+                <Dial radius={57} stroke={6} pos={props.hours} prevPos={props.prev.hours} max={24} />
+                <Dial radius={43} stroke={6} pos={props.minutes} prevPos={props.prev.minutes} max={60} />
+                <Dial radius={32} stroke={6} pos={props.seconds} prevPos={props.prev.seconds} max={60} />
+                <Dial radius={24} stroke={6} pos={props.milliseconds} prevPos={props.prev.milliseconds} max={1000} />
             </div>
         );
     }

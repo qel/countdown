@@ -5,7 +5,8 @@ import {v4} from 'node-uuid';
 import {registerVertexBuffer} from '../redux/actions';
 import dial2d from './dial-2d';
 
-const TRIANGLES = 180;
+const SQUARES = 180;
+const TRIANGLES = SQUARES * 2;
 const BUFFER_SIZE = TRIANGLES * 24; // 3 vertices * 2 components (x,y) * 4 bytes (32-bit float) = 24
 
 class Dial extends Component {
@@ -48,7 +49,9 @@ class Dial extends Component {
         const pi = Math.PI;
 
         // three 2d points
-        const r = props.radius / 80;
+        const rOut = props.radius / 80;
+        const rIn = rOut * 0.8;
+        const rDiff = rOut - rIn;
 
         // const vertices = [
         //     (r / 10) * cos(thetaNormal270), (r / 10) * sin(thetaNormal270) * -1,
@@ -58,17 +61,38 @@ class Dial extends Component {
 
         const vertices = [];
 
-        for (let i = 0; i < TRIANGLES; i++) {
+        let rLast = rIn + 0.5 * rDiff;
+
+        for (let i = 0; i < SQUARES; i++) {
             // theta: position in radians
-            const thetaA = ((props.pos / props.max) / TRIANGLES * i - 0.25) * pi * 2;
-            const thetaB = ((props.pos / props.max) / TRIANGLES * (i + 1) - 0.25) * pi * 2;
-            const thetaC = ((props.pos / props.max) / TRIANGLES * (i + 0.5) - 0.25) * pi * 2;
+
+            // const thetaA = ((props.pos / props.max) / TRIANGLES * i - 0.25) * pi * 2;
+            // const thetaB = ((props.pos / props.max) / TRIANGLES * (i + 1) - 0.25) * pi * 2;
+            // const thetaC = ((props.pos / props.max) / TRIANGLES * (i + 0.5) - 0.25) * pi * 2;
+            //
+            // vertices.push(...[
+            //     r * cos(thetaA), r * sin(thetaA) * -1,
+            //     r * cos(thetaB), r * sin(thetaB) * -1,
+            //     (r * 0.8) * cos(thetaC), rInside * sin(thetaC) * -1
+            // ]);
+
+            const rRand = rIn + Math.random() * rDiff;
+            const rRandOut = (rRand + rOut) / 2;
+            const rRandIn = (rRand + rIn) / 2;
+
+            const thetaA = ((props.pos / props.max) / SQUARES * i - 0.25) * pi * 2;
+            const thetaB = ((props.pos / props.max) / SQUARES * (i + 1) - 0.25) * pi * 2;
 
             vertices.push(...[
-                r * cos(thetaA), r * sin(thetaA) * -1,
-                r * cos(thetaB), r * sin(thetaB) * -1,
-                (r * 0.8) * cos(thetaC), (r * 0.8) * sin(thetaC) * -1
+                rLast * cos(thetaA), rLast * sin(thetaA) * -1,
+                rOut * cos(thetaB), rOut * sin(thetaB) * -1,
+                rRandOut * cos(thetaB), rRandOut * sin(thetaB) * -1,
+                rLast * cos(thetaA), rLast * sin(thetaA) * -1,
+                rIn * cos(thetaB), rIn * sin(thetaB) * -1,
+                rRandIn * cos(thetaB), rRandIn * sin(thetaB) * -1
             ]);
+
+            rLast = rRand;
         }
 
         gl.bufferSubData(gl.ARRAY_BUFFER, bufferOffset, new Float32Array(vertices));
